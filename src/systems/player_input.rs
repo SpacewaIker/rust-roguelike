@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 #[system]
 #[write_component(Point)]
+#[write_component(Render)]
 #[read_component(Player)]
 pub fn player_input(
     ecs: &mut SubWorld,
@@ -12,19 +13,21 @@ pub fn player_input(
     use VirtualKeyCode::*;
 
     if let Some(key) = key {
-        let delta = match key {
-            Left | A => Point::new(-1, 0),
-            Right | D => Point::new(1, 0),
-            Up | W => Point::new(0, -1),
-            Down | S => Point::new(0, 1),
+        let (delta, glyph) = match key {
+            Left | A => (Point::new(-1, 0), to_cp437('l')),
+            Right | D => (Point::new(1, 0), to_cp437('r')),
+            Up | W => (Point::new(0, -1), to_cp437('u')),
+            Down | S => (Point::new(0, 1), to_cp437('d')),
             _ => return,
         };
 
-        <&mut Point>::query()
+        <(&mut Point, &mut Render)>::query()
             .filter(component::<Player>())
             .iter_mut(ecs)
-            .for_each(|pos| {
+            .for_each(|(pos, render)| {
                 let destination = *pos + delta;
+
+                render.glyph = glyph;
 
                 if map.can_enter_tile(destination) {
                     *pos = destination;
