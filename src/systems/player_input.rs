@@ -2,8 +2,10 @@ use crate::prelude::*;
 
 #[system]
 #[read_component(Point)]
-#[write_component(Render)]
 #[read_component(Player)]
+#[read_component(Enemy)]
+#[write_component(Render)]
+#[write_component(Health)]
 pub fn player_input(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
@@ -22,25 +24,53 @@ pub fn player_input(
             _ => return,
         };
 
-        <(Entity, &Point, &mut Render)>::query()
+        let (player_entity, destination, render) = <(Entity, &Point, &mut Render)>::query()
             .filter(component::<Player>())
             .iter_mut(ecs)
-            .for_each(|(entity, pos, render)| {
-                let destination = *pos + delta;
+            .find_map(|(entity, pos, render)| Some((*entity, *pos + delta, render)))
+            .unwrap();
 
-                if let Some(glyph) = glyph {
-                    render.glyph = glyph;
-                }
+        if let Some(glyph) = glyph {
+            render.glyph = glyph;
+        }
 
+        if delta.x != 0 || delta.y != 0 {
+            let mut hit_something = false;
+
+            <(Entity, &Point)>::query()
+                .filter(component::<Enemy>())
+                .iter(ecs)
+                .filter(|(_, pos)| **pos == destination)
+                .for_each(|(entity, _)| {
+                    hit_something = true;
+                    commands.push((
+                        (),
+                        WantsToAttack {
+                            attacker: player_entity,
+                            victim: *entity,
+                        },
+                    ));
+                });
+
+            if !hit_something {
                 commands.push((
                     (),
                     WantsToMove {
-                        entity: *entity,
+                        entity: player_entity,
                         destination,
                     },
                 ));
+            }
+        } else {
+            if let Ok(mut health) = ecs
+                .entry_mut(player_entity)
+                .unwrap()
+                .get_component_mut::<Health>()
+            {
+                health.current = i32::min(health.max, health.current + 1);
+            }
+        }
 
-                *turn_state = TurnState::PlayerTurn;
-            })
+        *turn_state = TurnState::PlayerTurn;
     }
 }
