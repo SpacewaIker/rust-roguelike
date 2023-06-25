@@ -11,9 +11,9 @@ pub fn map_render(#[resource] map: &Map, #[resource] camera: &Camera) {
             let pt = Point::new(x, y);
             let offset = Point::new(camera.left_x, camera.top_y);
 
-            if map.in_bounds(pt) {
-                let idx = map_idx(x, y);
-                let glyph = match map.tiles[idx] {
+            if Map::in_bounds(pt) {
+                let idx = point_to_index(x, y);
+                let glyph = match map.tiles.get(idx).unwrap_or(&TileType::Wall) {
                     TileType::Floor => to_cp437('.'),
                     TileType::Wall => to_cp437('#'),
                 };

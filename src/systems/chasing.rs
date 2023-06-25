@@ -9,9 +9,9 @@ pub fn chasing(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuff
     let player_pos = <&Point>::query()
         .filter(component::<Player>())
         .iter(ecs)
-        .nth(0)
+        .next()
         .unwrap();
-    let player_idx = map_idx(player_pos.x, player_pos.y);
+    let player_idx = point_to_index(player_pos.x, player_pos.y);
 
     let search_targets = vec![player_idx];
     let dijkstra_map = DijkstraMap::new(SCREEN_WIDTH, SCREEN_HEIGHT, &search_targets, map, 1024.0);
@@ -20,7 +20,7 @@ pub fn chasing(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuff
         .filter(component::<ChasingPlayer>())
         .iter(ecs)
         .for_each(|(entity, pos)| {
-            let idx = map_idx(pos.x, pos.y);
+            let idx = point_to_index(pos.x, pos.y);
 
             if let Some(destination) = DijkstraMap::find_lowest_exit(&dijkstra_map, idx, map) {
                 let distance = DistanceAlg::Pythagoras.distance2d(*pos, *player_pos);

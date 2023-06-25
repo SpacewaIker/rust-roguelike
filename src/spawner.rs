@@ -37,3 +37,16 @@ pub fn spawn_monster(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Poin
         Name(name),
     ));
 }
+
+pub fn spawn_victory_amulet(ecs: &mut World, pos: Point) {
+    ecs.push((
+        Item,
+        VictoryAmulet,
+        pos,
+        Render {
+            color: ColorPair::new(WHITE, BLACK),
+            glyph: to_cp437('|'),
+        },
+        Name("Victory Amulet"),
+    ));
+}

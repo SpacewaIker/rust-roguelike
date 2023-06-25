@@ -6,20 +6,42 @@ pub struct MapBuilder {
     pub map: Map,
     pub rooms: Vec<Rect>,
     pub player_start: Point,
+    pub amulet_start: Point,
 }
 
 impl MapBuilder {
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
-        let mut mb = MapBuilder {
+        let mut mb = Self {
             map: Map::new(),
             rooms: Vec::new(),
             player_start: Point::zero(),
+            amulet_start: Point::zero(),
         };
 
         mb.fill(TileType::Wall);
         mb.build_random_rooms(rng);
         mb.build_corridors(rng);
         mb.player_start = mb.rooms[0].center();
+
+        let dijkstra_map = DijkstraMap::new(
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
+            &[mb.map.point2d_to_index(mb.player_start)],
+            &mb.map,
+            1024.0,
+        );
+
+        mb.amulet_start = mb.map.index_to_point2d(
+            dijkstra_map
+                .map
+                .iter()
+                .enumerate()
+                .filter(|(_, &dist)| dist < f32::MAX)
+                .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+                .unwrap()
+                .0,
+        );
+
         mb
     }
 
@@ -38,7 +60,7 @@ impl MapBuilder {
 
             let mut overlap = false;
 
-            for r in self.rooms.iter() {
+            for r in &self.rooms {
                 if r.intersect(&room) {
                     overlap = true;
                     break;
@@ -52,7 +74,7 @@ impl MapBuilder {
                         && point.y > 0
                         && point.y < SCREEN_HEIGHT
                     {
-                        let idx = map_idx(point.x, point.y);
+                        let idx = point_to_index(point.x, point.y);
                         self.map.tiles[idx] = TileType::Floor;
                     }
                 });
@@ -66,8 +88,8 @@ impl MapBuilder {
         use std::cmp::{max, min};
 
         for y in min(y1, y2)..=max(y1, y2) {
-            if let Some(idx) = self.map.try_idx(Point::new(x, y)) {
-                self.map.tiles[idx as usize] = TileType::Floor;
+            if let Some(idx) = Map::try_idx(Point::new(x, y)) {
+                self.map.tiles[idx] = TileType::Floor;
             }
         }
     }
@@ -76,8 +98,8 @@ impl MapBuilder {
         use std::cmp::{max, min};
 
         for x in min(x1, x2)..=max(x1, x2) {
-            if let Some(idx) = self.map.try_idx(Point::new(x, y)) {
-                self.map.tiles[idx as usize] = TileType::Floor;
+            if let Some(idx) = Map::try_idx(Point::new(x, y)) {
+                self.map.tiles[idx] = TileType::Floor;
             }
         }
     }

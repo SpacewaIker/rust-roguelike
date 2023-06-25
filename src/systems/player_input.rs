@@ -6,13 +6,14 @@ use crate::prelude::*;
 #[read_component(Enemy)]
 #[write_component(Render)]
 #[write_component(Health)]
+#[allow(clippy::trivially_copy_pass_by_ref)]
 pub fn player_input(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
     #[resource] key: &Option<VirtualKeyCode>,
     #[resource] turn_state: &mut TurnState,
 ) {
-    use VirtualKeyCode::*;
+    use VirtualKeyCode::{Down, Left, Right, Space, Up, A, D, S, W};
 
     if let Some(key) = key {
         let (delta, glyph) = match key {
@@ -27,7 +28,8 @@ pub fn player_input(
         let (player_entity, destination, render) = <(Entity, &Point, &mut Render)>::query()
             .filter(component::<Player>())
             .iter_mut(ecs)
-            .find_map(|(entity, pos, render)| Some((*entity, *pos + delta, render)))
+            .map(|(entity, pos, render)| (*entity, *pos + delta, render))
+            .next()
             .unwrap();
 
         if let Some(glyph) = glyph {
@@ -61,14 +63,12 @@ pub fn player_input(
                     },
                 ));
             }
-        } else {
-            if let Ok(mut health) = ecs
-                .entry_mut(player_entity)
-                .unwrap()
-                .get_component_mut::<Health>()
-            {
-                health.current = i32::min(health.max, health.current + 1);
-            }
+        } else if let Ok(mut health) = ecs
+            .entry_mut(player_entity)
+            .unwrap()
+            .get_component_mut::<Health>()
+        {
+            health.current = i32::min(health.max, health.current + 1);
         }
 
         *turn_state = TurnState::PlayerTurn;

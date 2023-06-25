@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum TileType {
     Wall,
     Floor,
@@ -19,25 +19,25 @@ impl Map {
         }
     }
 
-    pub fn in_bounds(&self, point: Point) -> bool {
+    pub const fn in_bounds(point: Point) -> bool {
         point.x >= 0 && point.x < SCREEN_WIDTH && point.y >= 0 && point.y < SCREEN_HEIGHT
     }
 
-    pub fn try_idx(&self, point: Point) -> Option<usize> {
-        if self.in_bounds(point) {
-            Some(map_idx(point.x, point.y))
+    pub const fn try_idx(point: Point) -> Option<usize> {
+        if Self::in_bounds(point) {
+            Some(point_to_index(point.x, point.y))
         } else {
             None
         }
     }
 
     pub fn can_enter_tile(&self, point: Point) -> bool {
-        self.in_bounds(point) && self.tiles[map_idx(point.x, point.y)] == TileType::Floor
+        Self::in_bounds(point) && self.tiles[point_to_index(point.x, point.y)] == TileType::Floor
     }
 
     fn valid_exit(&self, loc: Point, delta: Point) -> Option<usize> {
         let destination = loc + delta;
-        if self.in_bounds(destination) {
+        if Self::in_bounds(destination) {
             if self.can_enter_tile(destination) {
                 let idx = self.point2d_to_index(destination);
                 Some(idx)
@@ -50,7 +50,8 @@ impl Map {
     }
 }
 
-pub fn map_idx(x: i32, y: i32) -> usize {
+#[allow(clippy::cast_sign_loss)]
+pub const fn point_to_index(x: i32, y: i32) -> usize {
     ((y * SCREEN_WIDTH) + x) as usize
 }
 
@@ -83,6 +84,6 @@ impl Algorithm2D for Map {
     }
 
     fn in_bounds(&self, point: Point) -> bool {
-        self.in_bounds(point)
+        Self::in_bounds(point)
     }
 }

@@ -7,7 +7,7 @@ pub fn hud(ecs: &SubWorld) {
     let player_health = <&Health>::query()
         .filter(component::<Player>())
         .iter(ecs)
-        .nth(0)
+        .next()
         .unwrap();
 
     let mut draw_batch = DrawBatch::new();
