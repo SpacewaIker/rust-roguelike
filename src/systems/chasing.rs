@@ -5,6 +5,7 @@ use crate::prelude::*;
 #[read_component(ChasingPlayer)]
 #[read_component(Health)]
 #[read_component(Player)]
+#[read_component(FieldOfView)]
 pub fn chasing(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuffer) {
     let player_pos = <&Point>::query()
         .filter(component::<Player>())
@@ -16,10 +17,14 @@ pub fn chasing(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuff
     let search_targets = vec![player_idx];
     let dijkstra_map = DijkstraMap::new(SCREEN_WIDTH, SCREEN_HEIGHT, &search_targets, map, 1024.0);
 
-    <(Entity, &Point)>::query()
+    <(Entity, &Point, &FieldOfView)>::query()
         .filter(component::<ChasingPlayer>())
         .iter(ecs)
-        .for_each(|(entity, pos)| {
+        .for_each(|(entity, pos, fov)| {
+            if !fov.visible_tiles.contains(player_pos) {
+                return;
+            }
+
             let idx = point_to_index(pos.x, pos.y);
 
             if let Some(destination) = DijkstraMap::find_lowest_exit(&dijkstra_map, idx, map) {

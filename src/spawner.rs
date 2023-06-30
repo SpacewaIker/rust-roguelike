@@ -13,13 +13,14 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             max: 10,
         },
         Name("You"),
+        FieldOfView::new(8),
     ));
 }
 
 pub fn spawn_monster(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point) {
-    let (name, hp, glyph) = match rng.roll_dice(1, 10) {
-        1..=8 => ("Goblin", 2, to_cp437('g')),
-        _ => ("Orc", 4, to_cp437('o')),
+    let (name, hp, glyph, fov) = match rng.roll_dice(1, 10) {
+        1..=8 => ("Goblin", 2, to_cp437('g'), 6),
+        _ => ("Orc", 4, to_cp437('o'), 6),
     };
 
     ecs.push((
@@ -35,6 +36,7 @@ pub fn spawn_monster(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Poin
             max: hp,
         },
         Name(name),
+        FieldOfView::new(fov),
     ));
 }
 
