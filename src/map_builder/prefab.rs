@@ -1,4 +1,4 @@
-use log::{error, info};
+use log::{debug, error, info};
 
 use crate::prelude::*;
 
@@ -34,31 +34,43 @@ pub fn apply_prefab(mb: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
 
     let mut attempts = 0;
     while placement.is_none() && attempts < 10 {
+        attempts += 1;
+
         let dimensions = Rect::with_size(
             rng.range(0, SCREEN_WIDTH - FORTRESS.1),
             rng.range(0, SCREEN_HEIGHT - FORTRESS.2),
             FORTRESS.1,
             FORTRESS.2,
         );
+        debug!(
+            "Attempting to place prefab at ({}, {})",
+            dimensions.x1, dimensions.y1
+        );
+
         let mut can_place = false;
+        let mut overlaps_amulet = false;
+
         dimensions.for_each(|pt| {
             let idx = mb.map.point2d_to_index(pt);
             let distance = dijkstra_map.map[idx];
+
             if pt == mb.amulet_start {
-                error!("Overwriting amulet start");
-            }
-            if distance < 2000.0 && distance > 20.0 && pt != mb.amulet_start {
+                info!("Overwriting amulet start, skipping current placement");
+                overlaps_amulet = true;
+            } else if distance < 2000.0 && distance > 20.0 {
                 can_place = true;
             }
         });
+
+        if overlaps_amulet {
+            continue;
+        }
 
         if can_place {
             placement = Some(Point::new(dimensions.x1, dimensions.y1));
             let points = dimensions.point_set();
             mb.monster_spawns.retain(|pt| !points.contains(pt));
         }
-
-        attempts += 1;
     }
 
     if placement.is_none() {
