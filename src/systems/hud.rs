@@ -32,18 +32,26 @@ pub fn hud(ecs: &SubWorld) {
         ColorPair::new(WHITE, RED),
     );
 
-    let player = <Entity>::query()
-        .filter(component::<Player>())
+    let (player, map_level) = <(Entity, &Player)>::query()
         .iter(ecs)
+        .map(|(entity, player)| (*entity, player.map_level))
         .next()
         .unwrap();
 
+    // show map level
+    draw_batch.print_color_right(
+        Point::new(SCREEN_WIDTH * 2, 1),
+        format!("Dungeon Level: {}", map_level + 1),
+        ColorPair::new(YELLOW, BLACK),
+    );
+
+    // show inventory
     let mut y = 4;
 
     <(&Name, &Carried)>::query()
         .filter(component::<Item>())
         .iter(ecs)
-        .filter(|(_, &carried)| carried.by == *player)
+        .filter(|(_, &carried)| carried.by == player)
         .for_each(|(name, _)| {
             draw_batch.print(Point::new(3, y), format!("{} : {}", y - 3, name.0));
             y += 1;

@@ -6,6 +6,7 @@ const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize;
 pub enum TileType {
     Wall,
     Floor,
+    Exit,
 }
 
 pub struct Map {
@@ -34,7 +35,8 @@ impl Map {
     }
 
     pub fn can_enter_tile(&self, point: Point) -> bool {
-        Self::in_bounds(point) && self.tiles[point_to_index(point.x, point.y)] == TileType::Floor
+        let tile = self.tiles[point_to_index(point.x, point.y)];
+        Self::in_bounds(point) && (tile == TileType::Floor || tile == TileType::Exit)
     }
 
     fn valid_exit(&self, loc: Point, delta: Point) -> Option<usize> {
