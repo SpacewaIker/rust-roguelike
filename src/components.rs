@@ -39,8 +39,8 @@ pub struct Health {
     pub max: i32,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Name(pub &'static str);
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Name(pub String);
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Item;
