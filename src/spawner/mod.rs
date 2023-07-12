@@ -17,6 +17,7 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
         },
         Name(String::from("You")),
         FieldOfView::new(8),
+        Damage(1),
     ));
 }
 

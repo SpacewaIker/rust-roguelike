@@ -6,6 +6,7 @@ use crate::prelude::*;
 #[read_component(Enemy)]
 #[read_component(Item)]
 #[read_component(Carried)]
+#[read_component(Weapon)]
 #[write_component(Render)]
 #[write_component(Health)]
 #[allow(clippy::trivially_copy_pass_by_ref)]
@@ -97,6 +98,18 @@ fn pick_up_item(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
         .for_each(|(&entity, _)| {
             commands.remove_component::<Point>(entity);
             commands.add_component(entity, Carried { by: player });
+
+            if let Ok(entity) = ecs.entry_ref(entity) {
+                if entity.get_component::<Weapon>().is_ok() {
+                    <(Entity, &Carried)>::query()
+                        .filter(component::<Weapon>())
+                        .iter(ecs)
+                        .filter(|(_, carried)| carried.by == player)
+                        .for_each(|(&entity, _)| {
+                            commands.remove(entity);
+                        });
+                }
+            }
         });
 }
 

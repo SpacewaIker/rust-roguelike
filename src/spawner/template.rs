@@ -17,6 +17,7 @@ pub struct Template {
     pub provides: Option<Vec<(String, i32)>>,
     pub hp: Option<i32>,
     pub fov: Option<i32>,
+    pub base_damage: Option<i32>,
 }
 
 #[derive(Clone, Deserialize, Debug, PartialEq, Eq)]
@@ -96,6 +97,13 @@ impl Templates {
                     "MagicMap" => commands.add_component(entity, ProvidesDungeonMap),
                     _ => error!("Unknown effect: {}", provides),
                 });
+        }
+
+        if let Some(damage) = &template.base_damage {
+            commands.add_component(entity, Damage(*damage));
+            if template.entity_type == EntityType::Item {
+                commands.add_component(entity, Weapon);
+            }
         }
     }
 }

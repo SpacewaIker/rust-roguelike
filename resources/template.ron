@@ -1,5 +1,6 @@
 Templates(
     entities: [
+        // ========================== Items ==============================
         Template(
             entity_type: Item,
             name: "Healing Potion",
@@ -24,21 +25,69 @@ Templates(
             provides: Some([("MagicMap", 0)]),
             frequency: 1,
         ),
+
+        // ========================== Weapons ==============================
+        Template(
+            entity_type: Item,
+            name: "Rusty Sword",
+            glyph: 's',
+            levels: [0, 1, 2],
+            frequency: 1,
+            base_damage: Some(1),
+        ),
+        Template(
+            entity_type: Item,
+            name: "Shiny Sword",
+            glyph: 'S',
+            levels: [0, 1, 2],
+            frequency: 1,
+            base_damage: Some(2),
+        ),
+        Template(
+            entity_type: Item,
+            name: "Huge Sword",
+            glyph: '/',
+            levels: [1, 2],
+            frequency: 1,
+            base_damage: Some(3),
+        ),
+
+        // ========================== Enemies ==============================
         Template(
             entity_type: Enemy,
             name: "Goblin",
             glyph: 'g',
-            levels: [0, 1, 2],
+            levels: [0, 1],
             hp: Some(1),
             frequency: 3,
+            base_damage: Some(1),
         ),
         Template(
             entity_type: Enemy,
             name: "Orc",
             glyph: 'o',
-            levels: [1, 2],
+            levels: [0, 1, 2],
             hp: Some(2),
             frequency: 2,
+            base_damage: Some(1),
+        ),
+        Template(
+            entity_type: Enemy,
+            name: "Ogre",
+            glyph: 'O',
+            levels: [1, 2],
+            hp: Some(5),
+            frequency: 1,
+            base_damage: Some(2),
+        ),
+        Template(
+            entity_type: Enemy,
+            name: "Ettin",
+            glyph: 'E',
+            levels: [2],
+            hp: Some(10),
+            frequency: 1,
+            base_damage: Some(3),
         ),
     ],
 )
