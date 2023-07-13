@@ -6,6 +6,8 @@ use crate::prelude::*;
 #[read_component(Item)]
 #[read_component(Carried)]
 #[read_component(Name)]
+#[read_component(Damage)]
+#[read_component(EquippedWeapon)]
 pub fn hud(ecs: &SubWorld) {
     let player_health = <&Health>::query()
         .filter(component::<Player>())
@@ -46,24 +48,35 @@ pub fn hud(ecs: &SubWorld) {
     );
 
     // show inventory
-    let mut y = 4;
+    let mut y = 1;
 
     <(&Name, &Carried)>::query()
         .filter(component::<Item>())
         .iter(ecs)
         .filter(|(_, &carried)| carried.by == player)
         .for_each(|(name, _)| {
-            draw_batch.print(Point::new(3, y), format!("{} : {}", y - 3, name.0));
+            draw_batch.print(Point::new(3, y + 7), format!("{} : {}", y, name.0));
             y += 1;
         });
 
-    if y > 4 {
+    if y > 1 {
         draw_batch.print_color(
-            Point::new(3, 2),
+            Point::new(3, 6),
             "Items carried",
             ColorPair::new(YELLOW, BLACK),
         );
     }
+
+    // show equipped weapon
+    <(&Name, &Damage)>::query()
+        .filter(component::<EquippedWeapon>())
+        .iter(ecs)
+        .for_each(|(name, damage)| {
+            draw_batch.print(
+                Point::new(3, 3),
+                format!("Current Weapon: {} ({})", name.0, damage.0),
+            );
+        });
 
     draw_batch.submit(10000).expect("Batch error");
 }

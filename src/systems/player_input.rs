@@ -1,3 +1,5 @@
+use log::debug;
+
 use crate::prelude::*;
 
 #[system]
@@ -7,6 +9,8 @@ use crate::prelude::*;
 #[read_component(Item)]
 #[read_component(Carried)]
 #[read_component(Weapon)]
+#[read_component(Damage)]
+#[read_component(EquippedWeapon)]
 #[write_component(Render)]
 #[write_component(Health)]
 #[allow(clippy::trivially_copy_pass_by_ref)]
@@ -97,28 +101,30 @@ fn pick_up_item(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
         .filter(|(_, &item_pos)| item_pos == player_pos)
         .for_each(|(&entity, _)| {
             commands.remove_component::<Point>(entity);
-            commands.add_component(entity, Carried { by: player });
 
-            if let Ok(entity) = ecs.entry_ref(entity) {
-                if entity.get_component::<Weapon>().is_ok() {
-                    <(Entity, &Carried)>::query()
-                        .filter(component::<Weapon>())
-                        .iter(ecs)
-                        .filter(|(_, carried)| carried.by == player)
-                        .for_each(|(&entity, _)| {
-                            commands.remove(entity);
-                        });
+            let entry = ecs.entry_ref(entity).expect("Unable to get entry ref");
+            let is_weapon = entry.get_component::<Weapon>().is_ok();
+
+            if is_weapon {
+                debug!("Picking up weapon");
+                let new_damage = entry.get_component::<Damage>().map_or(0, |d| d.0);
+                let current_weapon = <(Entity, &Damage)>::query()
+                    .filter(component::<EquippedWeapon>())
+                    .iter(ecs)
+                    .map(|(entity, damage)| (*entity, damage.0))
+                    .next();
+
+                if let Some((current_weapon, current_damage)) = current_weapon {
+                    if new_damage > current_damage {
+                        commands.remove(current_weapon);
+                        commands.add_component(entity, EquippedWeapon);
+                    }
+                } else {
+                    commands.add_component(entity, EquippedWeapon);
                 }
+            } else {
+                commands.add_component(entity, Carried { by: player });
             }
-        });
-}
-
-fn heal_player(ecs: &mut SubWorld) {
-    <&mut Health>::query()
-        .filter(component::<Player>())
-        .iter_mut(ecs)
-        .for_each(|mut health| {
-            health.current = i32::min(health.max, health.current + 1);
         });
 }
 
