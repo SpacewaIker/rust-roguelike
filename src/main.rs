@@ -16,6 +16,8 @@ mod prelude {
     pub const SCREEN_HEIGHT: i32 = 50;
     pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH / 2;
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT / 2;
+    pub const UNWALKABLE_BORDER_WIDTH: i32 = DISPLAY_WIDTH / 4;
+    pub const UNWALKABLE_BORDER_HEIGHT: i32 = DISPLAY_HEIGHT / 4;
 
     pub use crate::camera::*;
     pub use crate::components::*;
