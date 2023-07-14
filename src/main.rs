@@ -247,10 +247,10 @@ fn main() -> BError {
         .with_tile_dimensions(32, 32)
         .with_resource_path("resources/")
         .with_font("dungeonfont_dir.png", 32, 32)
-        .with_font("dotrix_fontmap.png", 16, 16)
+        .with_font("alagard_fontmap.png", 16, 16)
         .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont_dir.png")
         .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont_dir.png")
-        .with_simple_console_no_bg(SCREEN_WIDTH, SCREEN_HEIGHT, "dotrix_fontmap.png")
+        .with_simple_console_no_bg(SCREEN_WIDTH, SCREEN_HEIGHT, "alagard_fontmap.png")
         .build()?;
 
     main_loop(context, State::new())

@@ -1,8 +1,8 @@
 from PIL import Image, ImageDraw, ImageFont
 
-FONT = "resources/Dotrix Demo.ttf"
+FONT = "resources/alagard.ttf"
 SIZE = 16
-OUTPUT = "resources/dotrix_fontmap.png"
+OUTPUT = "resources/alagard_fontmap.png"
 
 BAR_BORDER = (255, 255, 255, 255)
 BAR_FILL = (255, 255, 255, 150)
