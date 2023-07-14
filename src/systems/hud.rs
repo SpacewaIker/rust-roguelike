@@ -34,9 +34,9 @@ pub fn hud(ecs: &SubWorld) {
         ColorPair::new(WHITE, RED),
     );
 
-    let (player, map_level) = <(Entity, &Player)>::query()
+    let (player, score, map_level) = <(Entity, &Player)>::query()
         .iter(ecs)
-        .map(|(entity, player)| (*entity, player.map_level))
+        .map(|(entity, player)| (*entity, player.score, player.map_level))
         .next()
         .unwrap();
 
@@ -44,6 +44,13 @@ pub fn hud(ecs: &SubWorld) {
     draw_batch.print_color_right(
         Point::new(SCREEN_WIDTH * 2, 1),
         format!("Dungeon Level: {}", map_level + 1),
+        ColorPair::new(YELLOW, BLACK),
+    );
+
+    // show score
+    draw_batch.print_color_right(
+        Point::new(SCREEN_WIDTH * 2, 2),
+        format!("Score: {score:3}"),
         ColorPair::new(YELLOW, BLACK),
     );
 

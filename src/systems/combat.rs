@@ -3,7 +3,7 @@ use log::debug;
 
 #[system]
 #[read_component(WantsToAttack)]
-#[read_component(Player)]
+#[write_component(Player)]
 #[read_component(Damage)]
 #[read_component(Carried)]
 #[write_component(Health)]
@@ -26,11 +26,13 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
 
         let final_damage = base_damage + weapon_damage;
 
-        let is_player = ecs
+        let victim_is_player = ecs
             .entry_ref(*victim)
             .unwrap()
             .get_component::<Player>()
             .is_ok();
+
+        let mut score_gain = None;
 
         if let Ok(mut health) = ecs
             .entry_mut(*victim)
@@ -39,15 +41,29 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
         {
             debug!(
                 "Victim (player: {}) health: {} -> {}",
-                is_player,
+                victim_is_player,
                 health.current,
                 health.current - final_damage
             );
             health.current -= final_damage;
-            if health.current < 1 && !is_player {
+
+            if health.current < 1 && !victim_is_player {
+                score_gain = Some(health.max);
                 commands.remove(*victim);
             }
         }
+
+        if let Some(score_gain) = score_gain {
+            if let Ok(mut player) = ecs
+                .entry_mut(*attacker)
+                .unwrap()
+                .get_component_mut::<Player>()
+            {
+                debug!("Player gains {score_gain} score");
+                player.score += score_gain;
+            }
+        }
+
         commands.remove(*message);
     }
 }

@@ -10,6 +10,7 @@ pub struct Render {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Player {
     pub map_level: u32,
+    pub score: i32,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
