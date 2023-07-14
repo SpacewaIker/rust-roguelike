@@ -17,21 +17,17 @@ pub fn hud(ecs: &SubWorld) {
 
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(2);
-    draw_batch.print_centered(1, "Explore the Dungeon. Use WASD or arrows to move. Heal by 1hp by skipping your turn with SPACE");
+
+    // help message
+    draw_batch.print_centered(0, "Explore the Dungeon. Use WASD or arrows to move.");
+
+    // show health bar
     draw_batch.bar_horizontal(
-        Point::zero(),
-        SCREEN_WIDTH * 2,
+        Point::new(0, 2),
+        SCREEN_WIDTH / 2,
         player_health.current,
         player_health.max,
         ColorPair::new(RED, BLACK),
-    );
-    draw_batch.print_color_centered(
-        0,
-        format!(
-            " Health: {} / {} ",
-            player_health.current, player_health.max
-        ),
-        ColorPair::new(WHITE, RED),
     );
 
     let (player, score, map_level) = <(Entity, &Player)>::query()
@@ -42,14 +38,14 @@ pub fn hud(ecs: &SubWorld) {
 
     // show map level
     draw_batch.print_color_right(
-        Point::new(SCREEN_WIDTH * 2, 1),
+        Point::new(SCREEN_WIDTH, 2),
         format!("Dungeon Level: {}", map_level + 1),
         ColorPair::new(YELLOW, BLACK),
     );
 
     // show score
     draw_batch.print_color_right(
-        Point::new(SCREEN_WIDTH * 2, 2),
+        Point::new(SCREEN_WIDTH, 3),
         format!("Score: {score:3}"),
         ColorPair::new(YELLOW, BLACK),
     );
@@ -68,7 +64,7 @@ pub fn hud(ecs: &SubWorld) {
 
     if y > 1 {
         draw_batch.print_color(
-            Point::new(3, 6),
+            Point::new(1, 6),
             "Items carried",
             ColorPair::new(YELLOW, BLACK),
         );
@@ -80,7 +76,7 @@ pub fn hud(ecs: &SubWorld) {
         .iter(ecs)
         .for_each(|(name, damage)| {
             draw_batch.print(
-                Point::new(3, 3),
+                Point::new(1, 4),
                 format!("Current Weapon: {} ({})", name.0, damage.0),
             );
         });
