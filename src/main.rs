@@ -152,6 +152,13 @@ impl State {
                 entities_to_keep.insert(*e);
             });
 
+        <Entity>::query()
+            .filter(component::<EquippedWeapon>())
+            .iter(&self.ecs)
+            .for_each(|&e| {
+                entities_to_keep.insert(e);
+            });
+
         let mut cb = CommandBuffer::new(&self.ecs);
         for e in Entity::query().iter(&self.ecs) {
             if !entities_to_keep.contains(e) {

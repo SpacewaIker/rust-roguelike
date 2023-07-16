@@ -18,10 +18,10 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
             attacker.get_component::<Damage>().map_or(0, |d| d.0)
         });
 
-        let weapon_damage = <(&Carried, &Damage)>::query()
+        let weapon_damage = <&Damage>::query()
+            .filter(component::<EquippedWeapon>())
             .iter(ecs)
-            .filter(|(carried, _)| carried.by == *attacker)
-            .map(|(_, damage)| damage.0)
+            .map(|damage| damage.0)
             .sum::<i32>();
 
         let final_damage = base_damage + weapon_damage;
