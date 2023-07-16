@@ -22,7 +22,7 @@ trait MapArchitect: Debug {
 }
 
 pub trait MapTheme: Sync + Send {
-    fn tile_to_render(&self, tile_type: TileType) -> FontCharType;
+    fn tile_to_render(&self, tile_type: TileType, random: usize) -> FontCharType;
 
     fn get_darkness(&self) -> (u8, u8, u8);
 }

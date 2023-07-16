@@ -12,7 +12,7 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
         pos,
         Render {
             color: ColorPair::new(WHITE, BLACK),
-            glyph: to_cp437('@'),
+            glyph: 160,
         },
         Health {
             current: 10,

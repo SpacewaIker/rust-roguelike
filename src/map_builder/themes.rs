@@ -9,11 +9,11 @@ impl DungeonTheme {
 }
 
 impl MapTheme for DungeonTheme {
-    fn tile_to_render(&self, tile_type: TileType) -> FontCharType {
+    fn tile_to_render(&self, tile_type: TileType, _random: usize) -> FontCharType {
         match tile_type {
-            TileType::Floor => to_cp437('.'),
-            TileType::Wall => to_cp437('#'),
-            TileType::Exit => to_cp437('>'),
+            TileType::Floor => 105,
+            TileType::Wall => 106,
+            TileType::Exit => 0,
         }
     }
 
@@ -31,11 +31,15 @@ impl ForestTheme {
 }
 
 impl MapTheme for ForestTheme {
-    fn tile_to_render(&self, tile_type: TileType) -> FontCharType {
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_sign_loss)]
+    #[allow(clippy::cast_precision_loss)]
+    fn tile_to_render(&self, tile_type: TileType, random: usize) -> FontCharType {
+        let mut rng = RandomNumberGenerator::seeded(random as u64);
         match tile_type {
-            TileType::Floor => to_cp437(';'),
-            TileType::Wall => to_cp437('"'),
-            TileType::Exit => to_cp437('>'),
+            TileType::Floor => 96,
+            TileType::Wall => rng.range(97, 102), // 97-101
+            TileType::Exit => 0,
         }
     }
 

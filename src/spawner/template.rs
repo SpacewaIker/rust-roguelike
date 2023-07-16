@@ -13,7 +13,7 @@ pub struct Template {
     pub levels: HashSet<usize>,
     pub frequency: i32,
     pub name: String,
-    pub glyph: char,
+    pub glyphs: Vec<u16>,
     pub provides: Option<Vec<(String, i32)>>,
     pub hp: Option<i32>,
     pub fov: Option<i32>,
@@ -57,18 +57,23 @@ impl Templates {
         let mut commands = CommandBuffer::new(ecs);
         for &point in spawn_points.iter() {
             if let Some(entity) = rng.random_slice_entry(&available_entities) {
-                Self::spawn_entity(point, entity, &mut commands);
+                Self::spawn_entity(point, entity, &mut commands, rng);
             }
         }
         commands.flush(ecs);
     }
 
-    fn spawn_entity(point: Point, template: &Template, commands: &mut CommandBuffer) {
+    fn spawn_entity(
+        point: Point,
+        template: &Template,
+        commands: &mut CommandBuffer,
+        rng: &mut RandomNumberGenerator,
+    ) {
         let entity = commands.push((
             point,
             Render {
                 color: ColorPair::new(WHITE, BLACK),
-                glyph: to_cp437(template.glyph),
+                glyph: *rng.random_slice_entry(&template.glyphs).unwrap(),
             },
             Name(template.name.clone()),
         ));
