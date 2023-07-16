@@ -35,8 +35,11 @@ impl Map {
     }
 
     pub fn can_enter_tile(&self, point: Point) -> bool {
+        if !self.in_bounds(point) {
+            return false;
+        }
         let tile = self.tiles[point_to_index(point.x, point.y)];
-        Self::in_bounds(point) && (tile == TileType::Floor || tile == TileType::Exit)
+        tile == TileType::Floor || tile == TileType::Exit
     }
 
     fn valid_exit(&self, loc: Point, delta: Point) -> Option<usize> {
