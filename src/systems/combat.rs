@@ -32,6 +32,17 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
             .get_component::<Player>()
             .is_ok();
 
+        let attacker_is_player = ecs
+            .entry_ref(*attacker)
+            .unwrap()
+            .get_component::<Player>()
+            .is_ok();
+
+        if !victim_is_player && !attacker_is_player {
+            commands.remove(*message);
+            continue;
+        }
+
         let mut score_gain = None;
 
         if let Ok(mut health) = ecs
