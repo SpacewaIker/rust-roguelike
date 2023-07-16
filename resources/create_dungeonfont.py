@@ -54,10 +54,10 @@ glyphs = {
     133: ("dg_features32.gif", 1, 7),  # exit
     134: ("dg_features32.gif", 2, 7),  # exit
     # player ------------------------------
-    224: ("RPGCharacterSprites32x32.png", 1, 11),  # front
-    225: ("RPGCharacterSprites32x32.png", 5, 11),  # back
-    226: ("RPGCharacterSprites32x32.png", 9, 11),  # right
-    227: ("RPGCharacterSprites32x32.png", 9, 11, "flip"),  # left
+    224: ("Soldier 03-3.png", 1, 0),  # front
+    225: ("Soldier 03-3.png", 1, 3),  # back
+    226: ("Soldier 03-3.png", 1, 2),  # right
+    227: ("Soldier 03-3.png", 1, 1),  # left
 }
 
 dungeonfont = Image.new("RGBA", (32 * 16, 32 * 16), (0, 0, 0, 0))
