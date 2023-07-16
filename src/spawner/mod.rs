@@ -12,11 +12,11 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
         pos,
         Render {
             color: ColorPair::new(WHITE, BLACK),
-            glyph: 160,
+            glyph: 224,
         },
         Health {
-            current: 10,
-            max: 10,
+            current: 100,
+            max: 100,
         },
         Name(String::from("You")),
         FieldOfView::new(8),

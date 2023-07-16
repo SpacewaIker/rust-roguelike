@@ -1,12 +1,12 @@
-use crate::{map_builder::themes::ForestTheme, prelude::*};
+use crate::prelude::*;
 use log::info;
 use std::fmt::Debug;
 
 use self::{
     automata::CellularAutomataArchitect, drunkard::DrunkardsWalkArchitect, rooms::RoomsArchitect,
-    themes::DungeonTheme,
 };
 use prefab::apply_prefab;
+use themes::{CaveTheme, DungeonTheme, ForestTheme};
 
 mod automata;
 mod drunkard;
@@ -47,9 +47,10 @@ impl MapBuilder {
         let mut mb = architect.new_mapbuilder(rng);
         apply_prefab(&mut mb, rng);
 
-        mb.theme = match rng.range(0, 2) {
+        mb.theme = match rng.range(0, 3) {
             0 => DungeonTheme::new_boxed(),
-            _ => ForestTheme::new_boxed(),
+            1 => ForestTheme::new_boxed(),
+            _ => CaveTheme::new_boxed(),
         };
 
         mb

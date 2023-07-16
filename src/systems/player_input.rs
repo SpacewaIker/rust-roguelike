@@ -25,10 +25,10 @@ pub fn player_input(
 
     if let Some(key) = key {
         match key {
-            Left | A => move_player(ecs, commands, Point::new(-1, 0), 163),
-            Right | D => move_player(ecs, commands, Point::new(1, 0), 162),
-            Up | W => move_player(ecs, commands, Point::new(0, -1), 161),
-            Down | S => move_player(ecs, commands, Point::new(0, 1), 160),
+            Left | A => move_player(ecs, commands, Point::new(-1, 0), 227),
+            Right | D => move_player(ecs, commands, Point::new(1, 0), 226),
+            Up | W => move_player(ecs, commands, Point::new(0, -1), 225),
+            Down | S => move_player(ecs, commands, Point::new(0, 1), 224),
             G => pick_up_item(ecs, commands),
             Key1 => use_item(0, ecs, commands),
             Key2 => use_item(1, ecs, commands),

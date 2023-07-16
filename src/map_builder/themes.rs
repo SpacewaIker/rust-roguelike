@@ -9,16 +9,17 @@ impl DungeonTheme {
 }
 
 impl MapTheme for DungeonTheme {
-    fn tile_to_render(&self, tile_type: TileType, _random: usize) -> FontCharType {
+    fn tile_to_render(&self, tile_type: TileType, random: usize) -> FontCharType {
+        let mut rng = RandomNumberGenerator::seeded(random as u64);
         match tile_type {
-            TileType::Floor => 105,
-            TileType::Wall => 106,
-            TileType::Exit => 0,
+            TileType::Floor => rng.range(128, 130),
+            TileType::Wall => 130,
+            TileType::Exit => rng.range(131, 135),
         }
     }
 
     fn get_darkness(&self) -> (u8, u8, u8) {
-        GREY20
+        GREY30
     }
 }
 
@@ -31,19 +32,39 @@ impl ForestTheme {
 }
 
 impl MapTheme for ForestTheme {
-    #[allow(clippy::cast_possible_truncation)]
-    #[allow(clippy::cast_sign_loss)]
-    #[allow(clippy::cast_precision_loss)]
     fn tile_to_render(&self, tile_type: TileType, random: usize) -> FontCharType {
         let mut rng = RandomNumberGenerator::seeded(random as u64);
         match tile_type {
             TileType::Floor => 96,
-            TileType::Wall => rng.range(97, 102), // 97-101
-            TileType::Exit => 0,
+            TileType::Wall => rng.range(97, 102),
+            TileType::Exit => rng.range(102, 104),
         }
     }
 
     fn get_darkness(&self) -> (u8, u8, u8) {
         GREY80
+    }
+}
+
+pub struct CaveTheme;
+
+impl CaveTheme {
+    pub fn new_boxed() -> Box<dyn MapTheme> {
+        Box::new(Self {})
+    }
+}
+
+impl MapTheme for CaveTheme {
+    fn tile_to_render(&self, tile_type: TileType, random: usize) -> FontCharType {
+        let mut rng = RandomNumberGenerator::seeded(random as u64);
+        match tile_type {
+            TileType::Floor => 112,
+            TileType::Wall => rng.range(113, 115),
+            TileType::Exit => 0,
+        }
+    }
+
+    fn get_darkness(&self) -> (u8, u8, u8) {
+        GREY10
     }
 }
