@@ -65,6 +65,6 @@ impl MapTheme for CaveTheme {
     }
 
     fn get_darkness(&self) -> (u8, u8, u8) {
-        GREY10
+        GREY20
     }
 }

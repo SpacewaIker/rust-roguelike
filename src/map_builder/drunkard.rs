@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use log::debug;
+use log::trace;
 
 use crate::prelude::*;
 
@@ -30,7 +30,7 @@ impl MapArchitect for DrunkardsWalkArchitect {
             < DESIRED_FLOOR
         {
             iterations_count += 1;
-            debug!("Drunkard's walk iteration: {}", iterations_count);
+            trace!("Drunkard's walk iteration: {}", iterations_count);
             Self::drunkard(
                 Point::new(rng.range(0, SCREEN_WIDTH), rng.range(0, SCREEN_HEIGHT)),
                 rng,

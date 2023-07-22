@@ -11,6 +11,9 @@ pub struct Render {
 pub struct Player {
     pub map_level: u32,
     pub score: i32,
+    pub has_dungeon_map: bool,
+    pub reduced_visibility: i32,
+    pub can_see_enemies: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -47,6 +50,19 @@ pub struct Name(pub String);
 pub struct Item;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ChestItem;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ChestItemAction {
+    DungeonMap,
+    ImproveFov(i32),
+    ImproveDamage(i32),
+    ImproveDefense(i32),
+    ReduceVisibility(i32),
+    CanSeeEnemies,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct VictoryAmulet;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -80,9 +96,6 @@ pub struct ProvidesHealing {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct ProvidesDungeonMap;
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Carried {
     pub by: Entity,
 }
@@ -94,10 +107,22 @@ pub struct ActivateItem {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ActivateChestItem(pub ChestItemAction);
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Damage(pub i32);
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Defense(pub i32);
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Weapon;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct EquippedWeapon;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct EquippedChestItem;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MessageBox(pub String);

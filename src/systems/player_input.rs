@@ -7,6 +7,10 @@ use crate::prelude::*;
 #[read_component(Player)]
 #[read_component(Enemy)]
 #[read_component(Item)]
+#[read_component(MessageBox)]
+#[read_component(ChestItem)]
+#[read_component(ChestItemAction)]
+#[read_component(Name)]
 #[read_component(Carried)]
 #[read_component(Weapon)]
 #[read_component(Damage)]
@@ -29,7 +33,7 @@ pub fn player_input(
             Right | D => move_player(ecs, commands, Point::new(1, 0), 226),
             Up | W => move_player(ecs, commands, Point::new(0, -1), 225),
             Down | S => move_player(ecs, commands, Point::new(0, 1), 224),
-            G => pick_up_item(ecs, commands),
+            G => pick_up_item(ecs, commands, turn_state),
             Key1 => use_item(0, ecs, commands),
             Key2 => use_item(1, ecs, commands),
             Key3 => use_item(2, ecs, commands),
@@ -42,7 +46,9 @@ pub fn player_input(
             _ => return, // Do nothing, but don't skip the turn
         };
 
-        *turn_state = TurnState::PlayerTurn;
+        if *turn_state != TurnState::MessageBox {
+            *turn_state = TurnState::PlayerTurn;
+        }
     }
 }
 
@@ -86,7 +92,7 @@ fn move_player(ecs: &mut SubWorld, commands: &mut CommandBuffer, delta: Point, g
     }
 }
 
-fn pick_up_item(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
+fn pick_up_item(ecs: &mut SubWorld, commands: &mut CommandBuffer, turn_state: &mut TurnState) {
     let (player, player_pos) = <(Entity, &Point)>::query()
         .filter(component::<Player>())
         .iter(ecs)
@@ -103,6 +109,7 @@ fn pick_up_item(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
 
             let entry = ecs.entry_ref(entity).expect("Unable to get entry ref");
             let is_weapon = entry.get_component::<Weapon>().is_ok();
+            let is_chest_item = entry.get_component::<ChestItem>().is_ok();
 
             if is_weapon {
                 debug!("Picking up weapon");
@@ -121,7 +128,23 @@ fn pick_up_item(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
                 } else {
                     commands.add_component(entity, EquippedWeapon);
                 }
+            } else if is_chest_item {
+                let name = entry
+                    .get_component::<Name>()
+                    .map_or_else(|_| String::from("Unknown"), |n| n.0.clone());
+
+                debug!("Picking up chest item: {}", &name);
+
+                let action = entry.get_component::<ChestItemAction>();
+                if let Ok(&action) = action {
+                    commands.push(((), ActivateChestItem(action)));
+                    commands.add_component(entity, EquippedChestItem);
+                }
+
+                commands.push(((), MessageBox(name)));
+                *turn_state = TurnState::MessageBox;
             } else {
+                debug!("Picking up regular item");
                 commands.add_component(entity, Carried { by: player });
             }
         });

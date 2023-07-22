@@ -38,6 +38,7 @@ struct State {
     input_systems: Schedule,
     player_systems: Schedule,
     monster_systems: Schedule,
+    message_box_systems: Schedule,
 }
 
 impl State {
@@ -47,7 +48,6 @@ impl State {
         let mut rng = RandomNumberGenerator::new();
         let mut map_builder = MapBuilder::new(&mut rng);
         spawn_player(&mut ecs, map_builder.player_start);
-        // spawn_victory_amulet(&mut ecs, map_builder.amulet_start);
         let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
         map_builder.map.tiles[exit_idx] = TileType::Exit;
 
@@ -64,6 +64,7 @@ impl State {
             input_systems: build_input_scheduler(),
             player_systems: build_player_scheduler(),
             monster_systems: build_monster_scheduler(),
+            message_box_systems: build_message_box_scheduler(),
         }
     }
 
@@ -73,7 +74,6 @@ impl State {
         let mut rng = RandomNumberGenerator::new();
         let mut map_builder = MapBuilder::new(&mut rng);
         spawn_player(&mut self.ecs, map_builder.player_start);
-        // spawn_victory_amulet(&mut self.ecs, map_builder.amulet_start);
         let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
         map_builder.map.tiles[exit_idx] = TileType::Exit;
 
@@ -136,11 +136,7 @@ impl State {
     }
 
     fn advance_level(&mut self) {
-        let player_entity = *<Entity>::query()
-            .filter(component::<Player>())
-            .iter(&self.ecs)
-            .next()
-            .unwrap();
+        let player_entity = *<Entity>::query().iter(&self.ecs).next().unwrap();
 
         let mut entities_to_keep = HashSet::new();
         entities_to_keep.insert(player_entity);
@@ -153,7 +149,7 @@ impl State {
             });
 
         <Entity>::query()
-            .filter(component::<EquippedWeapon>())
+            .filter(component::<EquippedWeapon>() | component::<EquippedChestItem>())
             .iter(&self.ecs)
             .for_each(|&e| {
                 entities_to_keep.insert(e);
@@ -173,6 +169,13 @@ impl State {
 
         let mut rng = RandomNumberGenerator::new();
         let mut map_builder = MapBuilder::new(&mut rng);
+
+        let player = <&Player>::query().iter(&self.ecs).next().unwrap();
+        if player.has_dungeon_map {
+            map_builder.map.revealed_tiles.iter_mut().for_each(|v| {
+                *v = true;
+            });
+        }
 
         let mut map_level = 0;
         <(&mut Player, &mut Point)>::query()
@@ -229,15 +232,12 @@ impl GameState for State {
             TurnState::MonsterTurn => self
                 .monster_systems
                 .execute(&mut self.ecs, &mut self.resources),
-            TurnState::GameOver => {
-                self.game_over(ctx);
-            }
-            TurnState::Victory => {
-                self.victory(ctx);
-            }
-            TurnState::NextLevel => {
-                self.advance_level();
-            }
+            TurnState::GameOver => self.game_over(ctx),
+            TurnState::Victory => self.victory(ctx),
+            TurnState::NextLevel => self.advance_level(),
+            TurnState::MessageBox => self
+                .message_box_systems
+                .execute(&mut self.ecs, &mut self.resources),
         }
 
         render_draw_buffer(ctx).expect("Render error");

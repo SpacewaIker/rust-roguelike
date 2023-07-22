@@ -3,6 +3,8 @@ use crate::prelude::*;
 #[system]
 #[read_component(FieldOfView)]
 #[read_component(Player)]
+#[read_component(Render)]
+#[read_component(Point)]
 #[allow(clippy::borrowed_box)]
 pub fn map_render(
     ecs: &SubWorld,
@@ -19,12 +21,12 @@ pub fn map_render(
     let mut draw_batch = DrawBatch::new();
 
     draw_batch.target(0);
+    let offset = Point::new(camera.left_x, camera.top_y);
 
     for y in camera.top_y..=camera.bottom_y {
         for x in camera.left_x..=camera.right_x {
             let pt = Point::new(x, y);
             let idx = point_to_index(x, y);
-            let offset = Point::new(camera.left_x, camera.top_y);
 
             if Map::in_bounds(pt)
                 && (player_fov.visible_tiles.contains(&pt) || map.revealed_tiles[idx])

@@ -18,8 +18,21 @@ pub fn entity_render(ecs: &SubWorld, #[resource] camera: &Camera) {
     let offset = Point::new(camera.left_x, camera.top_y);
 
     <(&Point, &Render)>::query()
+        .filter(!component::<Enemy>())
         .iter(ecs)
         .filter(|(pos, _)| player_fov.visible_tiles.contains(pos))
+        .for_each(|(pos, render)| {
+            draw_batch.set(*pos - offset, render.color, render.glyph);
+        });
+
+    let can_see_enemies = <&Player>::query()
+        .iter(ecs)
+        .any(|player| player.can_see_enemies);
+
+    <(&Point, &Render)>::query()
+        .filter(component::<Enemy>())
+        .iter(ecs)
+        .filter(|(pos, _)| player_fov.visible_tiles.contains(pos) || can_see_enemies)
         .for_each(|(pos, render)| {
             draw_batch.set(*pos - offset, render.color, render.glyph);
         });

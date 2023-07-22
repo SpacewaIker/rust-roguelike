@@ -1,6 +1,6 @@
 Templates(
     entities: [
-        // ========================== Items ==============================
+        // ======================= Regular Items ==========================
         Template(
             entity_type: Item,
             name: "Healing Potion",
@@ -17,12 +17,62 @@ Templates(
             provides: Some([("Healing", 2)]),
             frequency: 2,
         ),
+
+        // ======================== Chest Items ============================
         Template(
-            entity_type: Item,
-            name: "Dungeon Map",
-            glyphs: [22],
+            entity_type: ChestItem,
+            name: "Cool Rock",
+            glyphs: [],
             levels: [0, 1, 2],
-            provides: Some([("MagicMap", 0)]),
+            provides: None,
+            frequency: 2,
+        ),
+        Template(
+            entity_type: ChestItem,
+            name: "Dungeon Map",
+            glyphs: [],
+            levels: [0, 1, 2],
+            provides: Some([("DungeonMap", 0)]),
+            frequency: 1,
+        ),
+        Template(
+            entity_type: ChestItem,
+            name: "Lantern",
+            glyphs: [],
+            levels: [0, 1, 2],
+            provides: Some([("ImproveFov", 12)]),
+            frequency: 1,
+        ),
+        Template(
+            entity_type: ChestItem,
+            name: "Ring of Strength",
+            glyphs: [],
+            levels: [0, 1, 2],
+            provides: Some([("ImproveDamage", 2)]),
+            frequency: 1,
+        ),
+        Template(
+            entity_type: ChestItem,
+            name: "Ring of Dexterity",
+            glyphs: [],
+            levels: [0, 1, 2],
+            provides: Some([("ImproveDefense", 2)]),
+            frequency: 1,
+        ),
+        Template(
+            entity_type: ChestItem,
+            name: "Fog Cloak",
+            glyphs: [],
+            levels: [0, 1, 2],
+            provides: Some([("ReduceVisibility", 4)]),
+            frequency: 1,
+        ),
+        Template(
+            entity_type: ChestItem,
+            name: "Wolf Pendant",
+            glyphs: [],
+            levels: [0, 1, 2],
+            provides: Some([("CanSeeEnemies", 0)]),
             frequency: 1,
         ),
 

@@ -5,6 +5,7 @@ use log::debug;
 #[read_component(WantsToAttack)]
 #[write_component(Player)]
 #[read_component(Damage)]
+#[read_component(Defense)]
 #[read_component(Carried)]
 #[write_component(Health)]
 pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
@@ -24,7 +25,13 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
             .map(|damage| damage.0)
             .sum::<i32>();
 
-        let final_damage = base_damage + weapon_damage;
+        let defense = ecs
+            .entry_ref(*victim)
+            .unwrap()
+            .get_component::<Defense>()
+            .map_or(0, |d| d.0);
+
+        let final_damage = i32::max(base_damage + weapon_damage - defense, 0);
 
         let victim_is_player = ecs
             .entry_ref(*victim)

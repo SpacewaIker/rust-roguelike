@@ -81,5 +81,23 @@ pub fn hud(ecs: &SubWorld) {
             );
         });
 
+    // show chest items
+    let mut y = 6;
+    <&Name>::query()
+        .filter(component::<EquippedChestItem>())
+        .iter(ecs)
+        .for_each(|name| {
+            draw_batch.print_right(Point::new(SCREEN_WIDTH, y), name.0.clone());
+            y += 1;
+        });
+
+    if y > 6 {
+        draw_batch.print_color_right(
+            Point::new(SCREEN_WIDTH, 5),
+            "Special Items",
+            ColorPair::new(YELLOW, BLACK),
+        );
+    }
+
     draw_batch.submit(10000).expect("Batch error");
 }

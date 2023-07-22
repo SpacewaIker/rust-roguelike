@@ -24,6 +24,7 @@ pub struct Template {
 pub enum EntityType {
     Enemy,
     Item,
+    ChestItem,
 }
 
 #[derive(Clone, Deserialize, Debug, PartialEq, Eq)]
@@ -56,8 +57,15 @@ impl Templates {
 
         let mut commands = CommandBuffer::new(ecs);
         for &point in spawn_points.iter() {
-            if let Some(entity) = rng.random_slice_entry(&available_entities) {
-                Self::spawn_entity(point, entity, &mut commands, rng);
+            let idx = rng
+                .random_slice_index(&available_entities)
+                .expect("No entities to spawn");
+
+            if let Some(entity) = available_entities.get(idx) {
+                Self::spawn_entity(point, entity, ecs, &mut commands, rng);
+                if entity.entity_type == EntityType::ChestItem {
+                    available_entities.swap_remove(idx);
+                }
             }
         }
         commands.flush(ecs);
@@ -66,23 +74,41 @@ impl Templates {
     fn spawn_entity(
         point: Point,
         template: &Template,
+        ecs: &mut World,
         commands: &mut CommandBuffer,
         rng: &mut RandomNumberGenerator,
     ) {
+        let glyph = if template.entity_type == EntityType::ChestItem {
+            22
+        } else {
+            *rng.random_slice_entry(&template.glyphs).unwrap()
+        };
+
         let entity = commands.push((
             point,
             Render {
                 color: ColorPair::new(WHITE, BLACK),
-                glyph: *rng.random_slice_entry(&template.glyphs).unwrap(),
+                glyph,
             },
             Name(template.name.clone()),
         ));
 
         match template.entity_type {
             EntityType::Item => commands.add_component(entity, Item),
+            EntityType::ChestItem => {
+                commands.add_component(entity, Item);
+                commands.add_component(entity, ChestItem);
+            }
             EntityType::Enemy => {
+                let reduce_fov = <&Player>::query()
+                    .iter(ecs)
+                    .map(|player| player.reduced_visibility)
+                    .sum::<i32>();
                 commands.add_component(entity, Enemy);
-                commands.add_component(entity, FieldOfView::new(template.fov.unwrap_or(6)));
+                commands.add_component(
+                    entity,
+                    FieldOfView::new(template.fov.unwrap_or(6) + reduce_fov),
+                );
                 commands.add_component(entity, ChasingPlayer);
                 commands.add_component(
                     entity,
@@ -99,7 +125,20 @@ impl Templates {
                 .iter()
                 .for_each(|(provides, n)| match provides.as_str() {
                     "Healing" => commands.add_component(entity, ProvidesHealing { amount: *n }),
-                    "MagicMap" => commands.add_component(entity, ProvidesDungeonMap),
+                    "DungeonMap" => commands.add_component(entity, ChestItemAction::DungeonMap),
+                    "ImproveFov" => commands.add_component(entity, ChestItemAction::ImproveFov(*n)),
+                    "ImproveDamage" => {
+                        commands.add_component(entity, ChestItemAction::ImproveDamage(*n));
+                    }
+                    "ImproveDefense" => {
+                        commands.add_component(entity, ChestItemAction::ImproveDefense(*n));
+                    }
+                    "ReduceVisibility" => {
+                        commands.add_component(entity, ChestItemAction::ReduceVisibility(*n));
+                    }
+                    "CanSeeEnemies" => {
+                        commands.add_component(entity, ChestItemAction::CanSeeEnemies);
+                    }
                     _ => error!("Unknown effect: {}", provides),
                 });
         }
