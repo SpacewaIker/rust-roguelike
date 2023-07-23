@@ -18,8 +18,15 @@ impl MapArchitect for CellularAutomataArchitect {
         let start = Self::find_start(&mb.map);
         mb.monster_spawns = mb.spawn_monsters(start, rng);
         mb.player_start = start;
-        mb.amulet_start = mb.find_most_distant();
-        mb
+
+        let most_distant = mb.find_most_distant();
+
+        if let Some(most_distant) = most_distant {
+            mb.amulet_start = most_distant;
+            mb
+        } else {
+            self.new_mapbuilder(rng)
+        }
     }
 }
 
@@ -72,8 +79,8 @@ impl CellularAutomataArchitect {
 
         map.tiles
             .iter()
-            .filter(|&&t| t == TileType::Floor)
             .enumerate()
+            .filter(|(_, &t)| t == TileType::Floor)
             .map(|(idx, _)| {
                 (
                     idx,
