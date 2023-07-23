@@ -39,6 +39,7 @@ struct State {
     player_systems: Schedule,
     monster_systems: Schedule,
     message_box_systems: Schedule,
+    templates: Templates,
 }
 
 impl State {
@@ -51,7 +52,8 @@ impl State {
         let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
         map_builder.map.tiles[exit_idx] = TileType::Exit;
 
-        spawn_level(&mut ecs, &mut rng, 0, &map_builder.monster_spawns);
+        let mut templates = Templates::load();
+        templates.spawn_entities(&mut ecs, &mut rng, 0, &map_builder.monster_spawns);
 
         resources.insert(map_builder.map);
         resources.insert(Camera::new(map_builder.player_start));
@@ -65,6 +67,7 @@ impl State {
             player_systems: build_player_scheduler(),
             monster_systems: build_monster_scheduler(),
             message_box_systems: build_message_box_scheduler(),
+            templates,
         }
     }
 
@@ -77,7 +80,8 @@ impl State {
         let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
         map_builder.map.tiles[exit_idx] = TileType::Exit;
 
-        spawn_level(&mut self.ecs, &mut rng, 0, &map_builder.monster_spawns);
+        self.templates
+            .spawn_entities(&mut self.ecs, &mut rng, 0, &map_builder.monster_spawns);
 
         self.resources.insert(map_builder.map);
         self.resources.insert(Camera::new(map_builder.player_start));
@@ -194,7 +198,7 @@ impl State {
             map_builder.map.tiles[exit_idx] = TileType::Exit;
         }
 
-        spawn_level(
+        self.templates.spawn_entities(
             &mut self.ecs,
             &mut rng,
             map_level as usize,

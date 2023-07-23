@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 mod template;
-use template::Templates;
+pub use template::Templates;
 
 pub fn spawn_player(ecs: &mut World, pos: Point) {
     ecs.push((
@@ -39,14 +39,4 @@ pub fn spawn_victory_amulet(ecs: &mut World, pos: Point) {
         },
         Name(String::from("Victory Amulet")),
     ));
-}
-
-pub fn spawn_level(
-    ecs: &mut World,
-    rng: &mut RandomNumberGenerator,
-    level: usize,
-    spawn_points: &[Point],
-) {
-    let template = Templates::load();
-    template.spawn_entities(ecs, rng, level, spawn_points);
 }

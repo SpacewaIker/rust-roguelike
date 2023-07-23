@@ -7,7 +7,7 @@ Templates(
             glyphs: [16],
             levels: [1, 2],
             provides: Some([("Healing", 6)]),
-            frequency: 2,
+            frequency: 3,
         ),
         Template(
             entity_type: Item,
@@ -15,18 +15,10 @@ Templates(
             glyphs: [17],
             levels: [0, 1],
             provides: Some([("Healing", 2)]),
-            frequency: 2,
+            frequency: 5,
         ),
 
         // ======================== Chest Items ============================
-        Template(
-            entity_type: ChestItem,
-            name: "Cool Rock",
-            glyphs: [],
-            levels: [0, 1, 2],
-            provides: None,
-            frequency: 2,
-        ),
         Template(
             entity_type: ChestItem,
             name: "Dungeon Map",
@@ -69,7 +61,7 @@ Templates(
         ),
         Template(
             entity_type: ChestItem,
-            name: "Wolf Pendant",
+            name: "Monster Pendant",
             glyphs: [],
             levels: [0, 1, 2],
             provides: Some([("CanSeeEnemies", 0)]),
@@ -109,7 +101,7 @@ Templates(
             glyphs: [48, 49, 50],
             levels: [0, 1],
             hp: Some(2),
-            frequency: 3,
+            frequency: 5,
             base_damage: Some(2),
         ),
         Template(
@@ -118,7 +110,7 @@ Templates(
             glyphs: [51, 52, 53, 54],
             levels: [0, 1, 2],
             hp: Some(4),
-            frequency: 2,
+            frequency: 4,
             base_damage: Some(1),
         ),
         Template(
@@ -127,7 +119,7 @@ Templates(
             glyphs: [55, 56, 57],
             levels: [2],
             hp: Some(6),
-            frequency: 1,
+            frequency: 3,
             base_damage: Some(4),
         ),
         Template(
@@ -136,7 +128,7 @@ Templates(
             glyphs: [58, 59, 60],
             levels: [1, 2],
             hp: Some(3),
-            frequency: 3,
+            frequency: 5,
             base_damage: Some(3),
         ),
         Template(
@@ -145,7 +137,7 @@ Templates(
             glyphs: [61, 62, 63],
             levels: [2],
             hp: Some(6),
-            frequency: 2,
+            frequency: 4,
             base_damage: Some(2),
         )
     ],

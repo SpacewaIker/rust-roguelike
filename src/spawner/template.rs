@@ -39,35 +39,50 @@ impl Templates {
     }
 
     pub fn spawn_entities(
-        &self,
+        &mut self,
         ecs: &mut World,
         rng: &mut RandomNumberGenerator,
         level: usize,
         spawn_points: &[Point],
     ) {
         let mut available_entities = Vec::new();
+
         self.entities
             .iter()
             .filter(|entity| entity.levels.contains(&level))
-            .for_each(|entity| {
+            .enumerate()
+            .for_each(|(idx, entity)| {
                 for _ in 0..entity.frequency {
-                    available_entities.push(entity);
+                    available_entities.push((idx, entity));
                 }
             });
 
         let mut commands = CommandBuffer::new(ecs);
-        for &point in spawn_points.iter() {
-            let idx = rng
-                .random_slice_index(&available_entities)
-                .expect("No entities to spawn");
+        let mut spawned_chest = None;
 
-            if let Some(entity) = available_entities.get(idx) {
-                Self::spawn_entity(point, entity, ecs, &mut commands, rng);
-                if entity.entity_type == EntityType::ChestItem {
-                    available_entities.swap_remove(idx);
+        for &point in spawn_points.iter() {
+            'try_spawn_entity: loop {
+                let idx = rng
+                    .random_slice_index(&available_entities)
+                    .expect("No entities to spawn");
+
+                if let Some((i, entity)) = available_entities.get(idx) {
+                    if entity.entity_type == EntityType::ChestItem {
+                        if spawned_chest.is_some() {
+                            continue 'try_spawn_entity;
+                        }
+                        spawned_chest = Some(*i);
+                    }
+                    Self::spawn_entity(point, entity, ecs, &mut commands, rng);
+                    break 'try_spawn_entity;
                 }
             }
         }
+
+        if let Some(idx) = spawned_chest {
+            self.entities.swap_remove(idx);
+        }
+
         commands.flush(ecs);
     }
 
