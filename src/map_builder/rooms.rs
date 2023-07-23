@@ -15,10 +15,15 @@ impl MapArchitect for RoomsArchitect {
         mb.build_random_rooms(rng);
         mb.build_corridors(rng);
         mb.player_start = mb.rooms[0].center();
-        mb.amulet_start = mb.find_most_distant();
+        mb.amulet_start = mb.find_most_distant().unwrap();
 
         for room in mb.rooms.iter().skip(1) {
-            mb.monster_spawns.push(room.center());
+            for _ in 0..2 {
+                mb.monster_spawns.push(Point::new(
+                    rng.range(room.x1, room.x2),
+                    rng.range(room.y1, room.y2),
+                ));
+            }
         }
 
         mb

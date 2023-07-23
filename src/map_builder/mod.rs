@@ -10,7 +10,6 @@ use themes::{CaveTheme, DungeonTheme, ForestTheme};
 
 mod automata;
 mod drunkard;
-mod empty;
 mod prefab;
 mod rooms;
 mod themes;
@@ -133,7 +132,7 @@ impl MapBuilder {
         }
     }
 
-    fn find_most_distant(&self) -> Point {
+    fn find_most_distant(&self) -> Option<Point> {
         let dijkstra_map = DijkstraMap::new(
             SCREEN_WIDTH,
             SCREEN_HEIGHT,
@@ -142,15 +141,16 @@ impl MapBuilder {
             1024.0,
         );
 
-        self.map.index_to_point2d(
-            dijkstra_map
-                .map
-                .iter()
-                .enumerate()
-                .filter(|(_, &dist)| dist < f32::MAX)
-                .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
-                .unwrap()
-                .0,
+        Some(
+            self.map.index_to_point2d(
+                dijkstra_map
+                    .map
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, &dist)| dist < f32::MAX)
+                    .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())?
+                    .0,
+            ),
         )
     }
 

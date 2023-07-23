@@ -53,9 +53,15 @@ impl MapArchitect for DrunkardsWalkArchitect {
 
         mb.monster_spawns = mb.spawn_monsters(center, rng);
         mb.player_start = center;
-        mb.amulet_start = mb.find_most_distant();
 
-        mb
+        let most_distant = mb.find_most_distant();
+
+        if let Some(most_distant) = most_distant {
+            mb.amulet_start = most_distant;
+            mb
+        } else {
+            self.new_mapbuilder(rng)
+        }
     }
 }
 
