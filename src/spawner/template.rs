@@ -17,7 +17,8 @@ pub struct Template {
     pub provides: Option<Vec<(String, i32)>>,
     pub hp: Option<i32>,
     pub fov: Option<i32>,
-    pub base_damage: Option<i32>,
+    pub damage: Option<i32>,
+    pub defense: Option<i32>,
 }
 
 #[derive(Clone, Deserialize, Debug, PartialEq, Eq)]
@@ -158,10 +159,17 @@ impl Templates {
                 });
         }
 
-        if let Some(damage) = &template.base_damage {
+        if let Some(damage) = &template.damage {
             commands.add_component(entity, Damage(*damage));
             if template.entity_type == EntityType::Item {
                 commands.add_component(entity, Weapon);
+            }
+        }
+
+        if let Some(defense) = &template.defense {
+            commands.add_component(entity, Defense(*defense));
+            if template.entity_type == EntityType::Item {
+                commands.add_component(entity, Armor);
             }
         }
     }

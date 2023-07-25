@@ -10,6 +10,9 @@ glyphs = {
     20: "SwordTwoHanded.PNG",
     21: "SwordMedievalMagical.PNG",
     22: "chest.gif",
+    23: "ArmorLeatherSoft.PNG",
+    24: "ArmorChainMailDouble.PNG",
+    25: "ArmorPlatemailRibbed.PNG",
     # monsters -----------------------------
     48: "ImpFighter.PNG",
     49: "ImpFighter2.PNG",

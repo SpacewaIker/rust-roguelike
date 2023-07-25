@@ -15,24 +15,6 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
         .collect::<Vec<_>>();
 
     for (message, attacker, victim) in &attacks {
-        let base_damage = ecs.entry_ref(*attacker).map_or(0, |attacker| {
-            attacker.get_component::<Damage>().map_or(0, |d| d.0)
-        });
-
-        let weapon_damage = <&Damage>::query()
-            .filter(component::<EquippedWeapon>())
-            .iter(ecs)
-            .map(|damage| damage.0)
-            .sum::<i32>();
-
-        let defense = ecs
-            .entry_ref(*victim)
-            .unwrap()
-            .get_component::<Defense>()
-            .map_or(0, |d| d.0);
-
-        let final_damage = i32::max(base_damage + weapon_damage - defense, 0);
-
         let victim_is_player = ecs
             .entry_ref(*victim)
             .unwrap()
@@ -49,6 +31,39 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
             commands.remove(*message);
             continue;
         }
+
+        let base_damage = ecs.entry_ref(*attacker).map_or(0, |attacker| {
+            attacker.get_component::<Damage>().map_or(0, |d| d.0)
+        });
+
+        let weapon_damage = if attacker_is_player {
+            <&Damage>::query()
+                .filter(component::<EquippedWeapon>())
+                .iter(ecs)
+                .map(|damage| damage.0)
+                .sum::<i32>()
+        } else {
+            0
+        };
+
+        let base_defense = ecs.entry_ref(*victim).map_or(0, |victim| {
+            victim.get_component::<Defense>().map_or(0, |d| d.0)
+        });
+
+        let armor_defense = if victim_is_player {
+            <&Defense>::query()
+                .filter(component::<EquippedArmor>())
+                .iter(ecs)
+                .map(|defense| defense.0)
+                .sum::<i32>()
+        } else {
+            0
+        };
+
+        let final_damage = i32::max(
+            base_damage + weapon_damage - base_defense - armor_defense,
+            0,
+        );
 
         let mut score_gain = None;
 

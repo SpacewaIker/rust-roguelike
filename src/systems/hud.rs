@@ -7,6 +7,7 @@ use crate::prelude::*;
 #[read_component(Carried)]
 #[read_component(Name)]
 #[read_component(Damage)]
+#[read_component(Defense)]
 #[read_component(EquippedWeapon)]
 pub fn hud(ecs: &SubWorld) {
     let player_health = <&Health>::query()
@@ -77,7 +78,18 @@ pub fn hud(ecs: &SubWorld) {
         .for_each(|(name, damage)| {
             draw_batch.print(
                 Point::new(1, 4),
-                format!("Current Weapon: {} ({})", name.0, damage.0),
+                format!("Current Weapon: {} (+{})", name.0, damage.0),
+            );
+        });
+
+    // show equipped armor
+    <(&Name, &Defense)>::query()
+        .filter(component::<EquippedArmor>())
+        .iter(ecs)
+        .for_each(|(name, defense)| {
+            draw_batch.print(
+                Point::new(1, 5),
+                format!("Current Armor: {} (+{})", name.0, defense.0),
             );
         });
 

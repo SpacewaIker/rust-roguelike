@@ -15,6 +15,9 @@ use crate::prelude::*;
 #[read_component(Weapon)]
 #[read_component(Damage)]
 #[read_component(EquippedWeapon)]
+#[read_component(Armor)]
+#[read_component(Defense)]
+#[read_component(EquippedArmor)]
 #[write_component(Render)]
 #[write_component(Health)]
 #[allow(clippy::trivially_copy_pass_by_ref)]
@@ -109,6 +112,7 @@ fn pick_up_item(ecs: &mut SubWorld, commands: &mut CommandBuffer, turn_state: &m
 
             let entry = ecs.entry_ref(entity).expect("Unable to get entry ref");
             let is_weapon = entry.get_component::<Weapon>().is_ok();
+            let is_armor = entry.get_component::<Armor>().is_ok();
             let is_chest_item = entry.get_component::<ChestItem>().is_ok();
 
             if is_weapon {
@@ -127,6 +131,23 @@ fn pick_up_item(ecs: &mut SubWorld, commands: &mut CommandBuffer, turn_state: &m
                     }
                 } else {
                     commands.add_component(entity, EquippedWeapon);
+                }
+            } else if is_armor {
+                debug!("Picking up armor");
+                let new_defense = entry.get_component::<Defense>().map_or(0, |d| d.0);
+                let current_armor = <(Entity, &Defense)>::query()
+                    .filter(component::<EquippedArmor>())
+                    .iter(ecs)
+                    .map(|(entity, defense)| (*entity, defense.0))
+                    .next();
+
+                if let Some((current_armor, current_defense)) = current_armor {
+                    if new_defense > current_defense {
+                        commands.remove(current_armor);
+                        commands.add_component(entity, EquippedArmor);
+                    }
+                } else {
+                    commands.add_component(entity, EquippedArmor);
                 }
             } else if is_chest_item {
                 let name = entry

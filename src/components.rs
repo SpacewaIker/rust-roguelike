@@ -119,7 +119,13 @@ pub struct Defense(pub i32);
 pub struct Weapon;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Armor;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct EquippedWeapon;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct EquippedArmor;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct EquippedChestItem;

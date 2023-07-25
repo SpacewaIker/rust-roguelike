@@ -75,7 +75,7 @@ Templates(
             glyphs: [19],
             levels: [0, 1, 2],
             frequency: 1,
-            base_damage: Some(1),
+            damage: Some(1),
         ),
         Template(
             entity_type: Item,
@@ -83,7 +83,7 @@ Templates(
             glyphs: [20],
             levels: [0, 1, 2],
             frequency: 1,
-            base_damage: Some(2),
+            damage: Some(2),
         ),
         Template(
             entity_type: Item,
@@ -91,7 +91,33 @@ Templates(
             glyphs: [21],
             levels: [1, 2],
             frequency: 1,
-            base_damage: Some(3),
+            damage: Some(3),
+        ),
+
+        // =========================== Armor ===============================
+        Template(
+            entity_type: Item,
+            name: "Leather Armor",
+            glyphs: [23],
+            levels: [0, 1, 2],
+            frequency: 1,
+            defense: Some(1),
+        ),
+        Template(
+            entity_type: Item,
+            name: "Chain Mail",
+            glyphs: [24],
+            levels: [0, 1, 2],
+            frequency: 1,
+            defense: Some(2),
+        ),
+        Template(
+            entity_type: Item,
+            name: "Plate Mail",
+            glyphs: [25],
+            levels: [1, 2],
+            frequency: 1,
+            defense: Some(3),
         ),
 
         // ========================== Enemies ==============================
@@ -102,7 +128,7 @@ Templates(
             levels: [0, 1],
             hp: Some(2),
             frequency: 5,
-            base_damage: Some(2),
+            damage: Some(2),
         ),
         Template(
             entity_type: Enemy,
@@ -111,7 +137,7 @@ Templates(
             levels: [0, 1, 2],
             hp: Some(4),
             frequency: 4,
-            base_damage: Some(1),
+            damage: Some(1),
         ),
         Template(
             entity_type: Enemy,
@@ -120,7 +146,7 @@ Templates(
             levels: [2],
             hp: Some(6),
             frequency: 3,
-            base_damage: Some(4),
+            damage: Some(4),
         ),
         Template(
             entity_type: Enemy,
@@ -129,7 +155,7 @@ Templates(
             levels: [1, 2],
             hp: Some(3),
             frequency: 5,
-            base_damage: Some(3),
+            damage: Some(3),
         ),
         Template(
             entity_type: Enemy,
@@ -138,7 +164,7 @@ Templates(
             levels: [2],
             hp: Some(6),
             frequency: 4,
-            base_damage: Some(2),
+            damage: Some(2),
         )
     ],
 )
