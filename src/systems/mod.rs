@@ -1,5 +1,7 @@
 use crate::prelude::*;
 
+pub use title_screen::SelectedButton;
+
 mod chasing;
 mod chest_item;
 mod combat;
@@ -12,8 +14,17 @@ mod message_box;
 mod movement;
 mod player_input;
 mod random_move;
+mod title_screen;
 mod tooltips;
 mod use_item;
+
+pub fn build_title_screen_scheduler() -> Schedule {
+    Schedule::builder()
+        .add_system(title_screen::input_system())
+        .flush()
+        .add_system(title_screen::render_system())
+        .build()
+}
 
 pub fn build_input_scheduler() -> Schedule {
     Schedule::builder()

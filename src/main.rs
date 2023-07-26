@@ -39,6 +39,7 @@ struct State {
     player_systems: Schedule,
     monster_systems: Schedule,
     message_box_systems: Schedule,
+    title_screen: Schedule,
     templates: Templates,
 }
 
@@ -57,8 +58,9 @@ impl State {
 
         resources.insert(map_builder.map);
         resources.insert(Camera::new(map_builder.player_start));
-        resources.insert(TurnState::AwaitingInput);
+        resources.insert(TurnState::TitleScreen);
         resources.insert(map_builder.theme);
+        resources.insert(SelectedButton::Play);
 
         Self {
             ecs,
@@ -67,6 +69,7 @@ impl State {
             player_systems: build_player_scheduler(),
             monster_systems: build_monster_scheduler(),
             message_box_systems: build_message_box_scheduler(),
+            title_screen: build_title_screen_scheduler(),
             templates,
         }
     }
@@ -85,8 +88,9 @@ impl State {
 
         self.resources.insert(map_builder.map);
         self.resources.insert(Camera::new(map_builder.player_start));
-        self.resources.insert(TurnState::AwaitingInput);
+        self.resources.insert(TurnState::TitleScreen);
         self.resources.insert(map_builder.theme);
+        self.resources.insert(SelectedButton::Play);
     }
 
     fn game_over(&mut self, ctx: &mut BTerm) {
@@ -110,9 +114,9 @@ impl State {
             BLACK,
             "Don't worry, you can always try again with a new hero.",
         );
-        ctx.print_color_centered(9, GREEN, BLACK, "Press P to play again.");
+        ctx.print_color_centered(9, GREEN, BLACK, "Press Enter to return to the main menu.");
 
-        if ctx.key == Some(VirtualKeyCode::P) {
+        if ctx.key == Some(VirtualKeyCode::Return) {
             self.reset_game_state();
         }
     }
@@ -132,9 +136,9 @@ impl State {
             BLACK,
             "Your town is saved, and you can return to your normal life.",
         );
-        ctx.print_color_centered(7, GREEN, BLACK, "Press P to play again");
+        ctx.print_color_centered(7, GREEN, BLACK, "Press Enter to return to the main menu.");
 
-        if ctx.key == Some(VirtualKeyCode::P) {
+        if ctx.key == Some(VirtualKeyCode::Return) {
             self.reset_game_state();
         }
     }
@@ -227,6 +231,9 @@ impl GameState for State {
 
         let current_state = *self.resources.get::<TurnState>().unwrap();
         match current_state {
+            TurnState::TitleScreen => self
+                .title_screen
+                .execute(&mut self.ecs, &mut self.resources),
             TurnState::AwaitingInput => self
                 .input_systems
                 .execute(&mut self.ecs, &mut self.resources),
