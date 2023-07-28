@@ -20,9 +20,56 @@ const FORTRESS: (&str, i32, i32) = (
     11,
 );
 
+const ARENA: (&str, i32, i32) = (
+    "
+---------------
+-----##-##-----
+---##-----##---
+--#----M----#--
+--#--#---#--#--
+-#--#-----#--#-
+-#-#-------#-#-
+---#---M---#---
+-#-#-------#-#-
+-#--#-----#--#-
+--#--#---#--#--
+--#----M----#--
+---##-----##---
+-----##-##-----
+---------------
+",
+    15,
+    15,
+);
+
+const TRAP: (&str, i32, i32) = (
+    "
+########
+#------#
+#-####-#
+#---M#-#
+####-#-#
+#M---#-#
+#---M#-#
+#----#-#
+#----#-#
+#M--M#-#
+##--##-#
+######-#
+",
+    8,
+    12,
+);
+
 #[allow(clippy::module_name_repetitions)]
 pub fn apply_prefab(mb: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
     let mut placement = None;
+
+    let prefab = match rng.roll_dice(1, 3) {
+        1 => ARENA,
+        2 => TRAP,
+        _ => FORTRESS,
+    };
 
     let dijkstra_map = DijkstraMap::new(
         SCREEN_WIDTH,
@@ -37,10 +84,10 @@ pub fn apply_prefab(mb: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
         attempts += 1;
 
         let dimensions = Rect::with_size(
-            rng.range(0, SCREEN_WIDTH - FORTRESS.1),
-            rng.range(0, SCREEN_HEIGHT - FORTRESS.2),
-            FORTRESS.1,
-            FORTRESS.2,
+            rng.range(0, SCREEN_WIDTH - prefab.1),
+            rng.range(0, SCREEN_HEIGHT - prefab.2),
+            prefab.1,
+            prefab.2,
         );
         debug!(
             "Attempting to place prefab at ({}, {})",
@@ -74,19 +121,19 @@ pub fn apply_prefab(mb: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
     }
 
     if placement.is_none() {
-        info!("Unable to place fortress");
+        info!("Unable to place prefab");
         return;
     }
 
     let placement = placement.unwrap();
-    let string_vec = FORTRESS
+    let string_vec = prefab
         .0
         .chars()
         .filter(|&c| c != '\r' && c != '\n')
         .collect::<Vec<_>>();
     let mut i = 0;
-    for ty in placement.y..placement.y + FORTRESS.2 {
-        for tx in placement.x..placement.x + FORTRESS.1 {
+    for ty in placement.y..placement.y + prefab.2 {
+        for tx in placement.x..placement.x + prefab.1 {
             let idx = point_to_index(tx, ty);
             let c = string_vec[i];
             match c {

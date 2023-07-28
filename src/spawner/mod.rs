@@ -12,7 +12,7 @@ pub fn spawn_victory_amulet(ecs: &mut World, pos: Point) {
         pos,
         Render {
             color: ColorPair::new(WHITE, BLACK),
-            glyph: to_cp437('|'),
+            glyph: 240,
         },
         Name(String::from("Victory Amulet")),
     ));

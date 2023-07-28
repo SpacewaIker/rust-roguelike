@@ -61,6 +61,8 @@ glyphs = {
     225: ("Soldier 03-3.png", 1, 3),  # back
     226: ("Soldier 03-3.png", 1, 2),  # right
     227: ("Soldier 03-3.png", 1, 1),  # left
+    # amulet ------------------------------
+    240: "sirref.png",
 }
 
 dungeonfont = Image.new("RGBA", (32 * 16, 32 * 16), (0, 0, 0, 0))
