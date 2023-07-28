@@ -32,6 +32,9 @@ use std::collections::HashSet;
 
 use prelude::*;
 
+embedded_resource!(DUNGEON_FONT, "../resources/mydungeonfont.png");
+embedded_resource!(ALAGARD_FONT, "../resources/alagard_fontmap.png");
+
 struct State {
     ecs: World,
     resources: Resources,
@@ -256,6 +259,9 @@ impl GameState for State {
 }
 
 fn main() -> BError {
+    link_resource!(DUNGEON_FONT, "resources/mydungeonfont.png");
+    link_resource!(ALAGARD_FONT, "resources/alagard_fontmap.png");
+
     env_logger::init();
 
     let context = BTermBuilder::new()

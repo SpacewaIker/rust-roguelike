@@ -3,6 +3,7 @@ use crate::prelude::*;
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum SelectedButton {
     Play,
+    HowToPlay,
     About,
 }
 
@@ -10,6 +11,7 @@ impl ToString for SelectedButton {
     fn to_string(&self) -> String {
         match self {
             Self::Play => String::from("Play"),
+            Self::HowToPlay => String::from("How to Play"),
             Self::About => String::from("About"),
         }
     }
@@ -57,7 +59,11 @@ pub fn render(#[resource] selected_button: &mut SelectedButton) {
     }
 
     // buttons
-    let buttons = [SelectedButton::Play, SelectedButton::About];
+    let buttons = [
+        SelectedButton::Play,
+        SelectedButton::HowToPlay,
+        SelectedButton::About,
+    ];
     for (y, button) in buttons.iter().enumerate() {
         let color = if button == selected_button {
             ColorPair::new(YELLOW, BLACK)
@@ -66,7 +72,7 @@ pub fn render(#[resource] selected_button: &mut SelectedButton) {
         };
 
         draw_batch.draw_box(
-            Rect::with_size(DISPLAY_WIDTH - 6, 28 + 5 * y as i32, 11, 4),
+            Rect::with_size(DISPLAY_WIDTH - 8, 28 + 5 * y as i32, 15, 4),
             color,
         );
         draw_batch.print_color_centered(30 + 5 * y, button.to_string(), color);
@@ -77,36 +83,61 @@ pub fn render(#[resource] selected_button: &mut SelectedButton) {
 
 #[system]
 #[allow(clippy::trivially_copy_pass_by_ref)]
+#[allow(clippy::enum_glob_use)]
 pub fn input(
     #[resource] key: &Option<VirtualKeyCode>,
     #[resource] selected_button: &mut SelectedButton,
     #[resource] turn_state: &mut TurnState,
 ) {
-    #[allow(clippy::enum_glob_use)]
+    use SelectedButton::*;
     use VirtualKeyCode::*;
 
-    #[allow(clippy::match_same_arms)]
     if let Some(key) = *key {
         match key {
             Up | W => {
                 *selected_button = match *selected_button {
-                    SelectedButton::Play => SelectedButton::Play,
-                    SelectedButton::About => SelectedButton::Play,
+                    Play | HowToPlay => Play,
+                    About => HowToPlay,
                 }
             }
             Down | S => {
                 *selected_button = match *selected_button {
-                    SelectedButton::Play => SelectedButton::About,
-                    SelectedButton::About => SelectedButton::About,
+                    Play => HowToPlay,
+                    HowToPlay | About => About,
                 }
             }
             Return => match *selected_button {
-                SelectedButton::Play => {
+                Play => {
                     *turn_state = TurnState::AwaitingInput;
                 }
-                SelectedButton::About => {
-                    todo!()
+                #[cfg(target_family = "wasm")]
+                HowToPlay => {
+                    let window = web_sys::window().expect("No window found");
+                    window
+                        .open_with_url_and_target(
+                            "https://www.github.com/SpacewaIker/rust-roguelike",
+                            "_blank",
+                        )
+                        .expect("Failed to open link")
+                        .expect("No window returned")
+                        .focus()
+                        .expect("Failed to focus window");
                 }
+                #[cfg(target_family = "wasm")]
+                About => {
+                    let window = web_sys::window().expect("No window found");
+                    window
+                        .open_with_url_and_target(
+                            "https://www.github.com/SpacewaIker/rust-roguelike",
+                            "_blank",
+                        )
+                        .expect("Error opening link")
+                        .expect("No window returned")
+                        .focus()
+                        .expect("Failed to focus link");
+                }
+                #[cfg(not(target_family = "wasm"))]
+                HowToPlay | About => {}
             },
             _ => {}
         }

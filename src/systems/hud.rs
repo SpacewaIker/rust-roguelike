@@ -19,12 +19,9 @@ pub fn hud(ecs: &SubWorld) {
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(2);
 
-    // help message
-    draw_batch.print_centered(0, "Explore the Dungeon. Use WASD or arrows to move.");
-
     // show health bar
     draw_batch.bar_horizontal(
-        Point::new(0, 2),
+        Point::zero(),
         SCREEN_WIDTH / 2,
         player_health.current,
         player_health.max,
@@ -39,31 +36,31 @@ pub fn hud(ecs: &SubWorld) {
 
     // show map level
     draw_batch.print_color_right(
-        Point::new(SCREEN_WIDTH, 2),
+        Point::new(SCREEN_WIDTH, 0),
         format!("Dungeon Level: {}", map_level + 1),
         ColorPair::new(YELLOW, BLACK),
     );
 
     // show score
     draw_batch.print_color_right(
-        Point::new(SCREEN_WIDTH, 3),
+        Point::new(SCREEN_WIDTH, 1),
         format!("Score: {score:3}"),
         ColorPair::new(YELLOW, BLACK),
     );
 
     // show inventory
-    let mut y = 1;
+    let mut y = 7;
 
     <(&Name, &Carried)>::query()
         .filter(component::<Item>())
         .iter(ecs)
         .filter(|(_, &carried)| carried.by == player)
         .for_each(|(name, _)| {
-            draw_batch.print(Point::new(3, y + 7), format!("{} : {}", y, name.0));
+            draw_batch.print(Point::new(3, y), format!("{} : {}", y, name.0));
             y += 1;
         });
 
-    if y > 1 {
+    if y > 7 {
         draw_batch.print_color(
             Point::new(1, 6),
             "Items carried",
@@ -77,7 +74,7 @@ pub fn hud(ecs: &SubWorld) {
         .iter(ecs)
         .for_each(|(name, damage)| {
             draw_batch.print(
-                Point::new(1, 4),
+                Point::new(1, 3),
                 format!("Current Weapon: {} (+{})", name.0, damage.0),
             );
         });
@@ -88,13 +85,13 @@ pub fn hud(ecs: &SubWorld) {
         .iter(ecs)
         .for_each(|(name, defense)| {
             draw_batch.print(
-                Point::new(1, 5),
+                Point::new(1, 4),
                 format!("Current Armor: {} (+{})", name.0, defense.0),
             );
         });
 
     // show chest items
-    let mut y = 6;
+    let mut y = 4;
     <&Name>::query()
         .filter(component::<EquippedChestItem>())
         .iter(ecs)
@@ -103,9 +100,9 @@ pub fn hud(ecs: &SubWorld) {
             y += 1;
         });
 
-    if y > 6 {
+    if y > 4 {
         draw_batch.print_color_right(
-            Point::new(SCREEN_WIDTH, 5),
+            Point::new(SCREEN_WIDTH, 3),
             "Special Items",
             ColorPair::new(YELLOW, BLACK),
         );

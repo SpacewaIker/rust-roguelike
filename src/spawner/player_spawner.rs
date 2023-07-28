@@ -1,9 +1,9 @@
-use std::fs::File;
-
 use crate::prelude::*;
 
-use ron::de::from_reader;
+use ron::de::from_bytes;
 use serde::Deserialize;
+
+const PLAYER_TEMPLATE: &[u8] = include_bytes!("../../resources/player.ron");
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
 pub struct PlayerTemplate {
@@ -15,8 +15,7 @@ pub struct PlayerTemplate {
 
 impl PlayerTemplate {
     pub fn load() -> Self {
-        let file = File::open("resources/player.ron").expect("Failed opening player template file");
-        from_reader(file).expect("Failed parsing player template file")
+        from_bytes(PLAYER_TEMPLATE).expect("Failed to load player template")
     }
 }
 
