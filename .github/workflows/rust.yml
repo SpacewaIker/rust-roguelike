@@ -1,0 +1,31 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  content: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: cargo build --verbose --target wasm32-unknown-unknown --release
+    - name: Wasm bindgen
+      run: |
+        - cargo install wasm-bindgen-cli
+        - wasm-bindgen target/wasm32-unknown-unknown/release/rust-roguelike.wasm --out-dir ./wasm --no-modules --no-typescript
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: wasm
