@@ -160,7 +160,11 @@ impl State {
             });
 
         <Entity>::query()
-            .filter(component::<EquippedWeapon>() | component::<EquippedChestItem>())
+            .filter(
+                component::<EquippedWeapon>()
+                    | component::<EquippedChestItem>()
+                    | component::<EquippedArmor>(),
+            )
             .iter(&self.ecs)
             .for_each(|&e| {
                 entities_to_keep.insert(e);
