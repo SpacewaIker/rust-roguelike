@@ -21,12 +21,14 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build
       run: |
-        - rustup toolchain install wasm32-unknown-unknown
-        - cargo build --verbose --target wasm32-unknown-unknown --release
+        rustup toolchain install wasm32-unknown-unknown
+        cargo build --verbose --target wasm32-unknown-unknown --release
+
     - name: Wasm bindgen
       run: |
-        - cargo install wasm-bindgen-cli
-        - wasm-bindgen target/wasm32-unknown-unknown/release/rust-roguelike.wasm --out-dir ./wasm --no-modules --no-typescript
+        cargo install wasm-bindgen-cli
+        wasm-bindgen target/wasm32-unknown-unknown/release/rust-roguelike.wasm --out-dir ./wasm --no-modules --no-typescript
+
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@v4
       with:
