@@ -128,7 +128,7 @@ Templates(
             levels: [0, 1, 2],
             hp: Some(20),
             frequency: 5,
-            damage: Some(30),
+            damage: Some(25),
             defense: Some(5),
             fov: Some(5),
         ),

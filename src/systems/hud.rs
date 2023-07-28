@@ -56,7 +56,7 @@ pub fn hud(ecs: &SubWorld) {
         .iter(ecs)
         .filter(|(_, &carried)| carried.by == player)
         .for_each(|(name, _)| {
-            draw_batch.print(Point::new(3, y), format!("{} : {}", y, name.0));
+            draw_batch.print(Point::new(3, y), format!("{} : {}", y - 6, name.0));
             y += 1;
         });
 

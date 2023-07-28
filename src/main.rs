@@ -109,7 +109,7 @@ impl State {
             5,
             WHITE,
             BLACK,
-            "The Amulet remains unclaimed, and your home town is not saved.",
+            "The Amulet of Sirref remains unclaimed, and the world defenseless.",
         );
         ctx.print_color_centered(
             8,
@@ -131,13 +131,13 @@ impl State {
             4,
             WHITE,
             BLACK,
-            "You put on the Amulet of Victory and feel its power course through your veins.",
+            "As you touch the Amulet of Sirref, a magical shockwave rids the world of monsters.",
         );
         ctx.print_color_centered(
             5,
             WHITE,
             BLACK,
-            "Your town is saved, and you can return to your normal life.",
+            "The world is saved. You are a hero of the people!",
         );
         ctx.print_color_centered(7, GREEN, BLACK, "Press Enter to return to the main menu.");
 
