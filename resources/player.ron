@@ -2,5 +2,5 @@ PlayerTemplate(
     health: 100,
     fov: 6,
     base_damage: 15,
-    base_defense: 5,
+    base_defense: 10,
 )

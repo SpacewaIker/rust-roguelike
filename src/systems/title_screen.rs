@@ -115,7 +115,7 @@ pub fn input(
                     let window = web_sys::window().expect("No window found");
                     window
                         .open_with_url_and_target(
-                            "https://www.github.com/SpacewaIker/rust-roguelike",
+                            "https://www.github.com/SpacewaIker/rust-roguelike/blob/main/how_to_play.md",
                             "_blank",
                         )
                         .expect("Failed to open link")

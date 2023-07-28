@@ -6,7 +6,7 @@ Templates(
             name: "Healing Potion",
             glyphs: [16],
             levels: [1, 2],
-            provides: Some([("Healing", 50)]),
+            provides: Some([("Healing", 70)]),
             frequency: 3,
         ),
         Template(
@@ -14,7 +14,7 @@ Templates(
             name: "Weak Healing Potion",
             glyphs: [17],
             levels: [0, 1],
-            provides: Some([("Healing", 20)]),
+            provides: Some([("Healing", 40)]),
             frequency: 5,
         ),
 
