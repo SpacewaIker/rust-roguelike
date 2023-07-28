@@ -50,8 +50,8 @@ impl Templates {
 
         self.entities
             .iter()
-            .filter(|entity| entity.levels.contains(&level))
             .enumerate()
+            .filter(|(_, entity)| entity.levels.contains(&level))
             .for_each(|(idx, entity)| {
                 for _ in 0..entity.frequency {
                     available_entities.push((idx, entity));
