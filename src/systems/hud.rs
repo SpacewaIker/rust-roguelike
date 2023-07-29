@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::prelude::*;
 
 #[system]
@@ -49,16 +51,33 @@ pub fn hud(ecs: &SubWorld) {
     );
 
     // show inventory
-    let mut y = 7;
+    let mut items_count = HashMap::new();
 
     <(&Name, &Carried)>::query()
         .filter(component::<Item>())
         .iter(ecs)
         .filter(|(_, &carried)| carried.by == player)
         .for_each(|(name, _)| {
-            draw_batch.print(Point::new(3, y), format!("{} : {}", y - 6, name.0));
-            y += 1;
+            if items_count.contains_key(&name.0) {
+                *items_count.get_mut(&name.0).unwrap() += 1;
+            } else {
+                items_count.insert(name.0.clone(), 1);
+            }
         });
+
+    let mut sorted = items_count.keys().collect::<Vec<_>>();
+    sorted.sort();
+
+    let mut y = 7;
+    for name in sorted {
+        let count = items_count.get(name).unwrap();
+        draw_batch.print_color(
+            Point::new(1, y),
+            format!("{}: {} (x{})", y - 6, name, count),
+            ColorPair::new(WHITE, BLACK),
+        );
+        y += 1;
+    }
 
     if y > 7 {
         draw_batch.print_color(

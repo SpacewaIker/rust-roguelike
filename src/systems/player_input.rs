@@ -178,13 +178,22 @@ fn use_item(n: usize, ecs: &mut SubWorld, commands: &mut CommandBuffer) {
         .next()
         .unwrap();
 
-    let item_entity = <(Entity, &Carried)>::query()
+    let mut items = <(&Name, &Carried)>::query()
         .filter(component::<Item>())
         .iter(ecs)
         .filter(|(_, carried)| carried.by == player_entity)
-        .enumerate()
-        .filter(|(item_count, _)| *item_count == n)
-        .map(|(_, (item, _))| *item)
+        .map(|(name, _)| name)
+        .collect::<Vec<_>>();
+
+    items.dedup();
+    items.sort();
+    let to_use = items.get(n).unwrap().0.clone();
+
+    let item_entity = <(Entity, &Name, &Carried)>::query()
+        .filter(component::<Item>())
+        .iter(ecs)
+        .filter(|(_, name, carried)| carried.by == player_entity && name.0 == to_use)
+        .map(|(item, _, _)| *item)
         .next();
 
     if let Some(item) = item_entity {
