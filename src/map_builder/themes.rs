@@ -60,7 +60,7 @@ impl MapTheme for CaveTheme {
         match tile_type {
             TileType::Floor => 112,
             TileType::Wall => rng.range(113, 115),
-            TileType::Exit => 0,
+            TileType::Exit => rng.range(115, 119),
         }
     }
 
