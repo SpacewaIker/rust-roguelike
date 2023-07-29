@@ -21,4 +21,5 @@ This game uses the following free-to-use assets:
 - _Alagard_ font by **Hewett Tsoi** on Dafont.com (https://www.dafont.com/alagard.font)
 - _Roguelike tiles (large collection)_ by **David E. Gervais** on OpenGameArt.org (https://opengameart.org/content/roguelike-tiles-large-collection)
 - _RPG Character Sprites_ by **Pipoya** on itch.io (https://pipoya.itch.io/pipoya-free-rpg-character-sprites-32x32)
-- _Fraktur_ FIGlet font by Philip Menke on patorjk.com (http://www.patorjk.com/software/taag/#p=display&f=Fraktur&t=Hello%20world)
+- _Fraktur_ FIGlet font by Philip Menke on patorjk.com (http://www.patorjk.com/software/taag/#p=display&f=Fraktur)
+- _Epic_ FIGlet font by Claude Martins on patorjk.com (http://www.patorjk.com/software/taag/#p=display&f=Epic)
