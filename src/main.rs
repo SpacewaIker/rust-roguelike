@@ -98,50 +98,64 @@ impl State {
 
     fn game_over(&mut self, ctx: &mut BTerm) {
         ctx.set_active_console(2);
-        ctx.print_color_centered(2, RED, BLACK, "Your quest has ended.");
-        ctx.print_color_centered(
-            4,
-            WHITE,
-            BLACK,
-            "Slain by a monster, your hero's journey has come to a premature end.",
-        );
-        ctx.print_color_centered(
-            5,
-            WHITE,
-            BLACK,
-            "The Amulet of Sirref remains unclaimed, and the world defenseless.",
-        );
-        ctx.print_color_centered(
-            8,
-            YELLOW,
-            BLACK,
-            "Don't worry, you can always try again with a new hero.",
-        );
-        ctx.print_color_centered(9, GREEN, BLACK, "Press Enter to return to the main menu.");
 
-        if ctx.key == Some(VirtualKeyCode::Return) {
+        let text = r#"
+          _______               ______  _________ _______  ______  
+|\     /|(  ___  )|\     /|    (  __  \ \__   __/(  ____ \(  __  \ 
+( \   / )| (   ) || )   ( |    | (  \  )   ) (   | (    \/| (  \  )
+ \ (_) / | |   | || |   | |    | |   ) |   | |   | (__    | |   ) |
+  \   /  | |   | || |   | |    | |   | |   | |   |  __)   | |   | |
+   ) (   | |   | || |   | |    | |   ) |   | |   | (      | |   ) |
+   | |   | (___) || (___) |    | (__/  )___) (___| (____/\| (__/  )
+   \_/   (_______)(_______)    (______/ \_______/(_______/(______/ 
+"#;
+
+        for (y, line) in text.lines().enumerate() {
+            ctx.print_color_centered(y + 15, RED, BLACK, line);
+        }
+
+        ctx.print_centered(SCREEN_HEIGHT - 2, "Press Space or Enter to restart.");
+
+        if matches!(
+            ctx.key,
+            Some(VirtualKeyCode::Return | VirtualKeyCode::Space)
+        ) {
             self.reset_game_state();
         }
     }
 
     fn victory(&mut self, ctx: &mut BTerm) {
         ctx.set_active_console(2);
-        ctx.print_color_centered(2, GREEN, BLACK, "You have won!");
-        ctx.print_color_centered(
-            4,
-            WHITE,
-            BLACK,
-            "As you touch the Amulet of Sirref, a magical shockwave rids the world of monsters.",
-        );
-        ctx.print_color_centered(
-            5,
-            WHITE,
-            BLACK,
-            "The world is saved. You are a hero of the people!",
-        );
-        ctx.print_color_centered(7, GREEN, BLACK, "Press Enter to return to the main menu.");
 
-        if ctx.key == Some(VirtualKeyCode::Return) {
+        let text = r#"
+             _________ _______ _________ _______  _______               
+    |\     /|\__   __/(  ____ \\__   __/(  ___  )(  ____ )|\     /|     
+    | )   ( |   ) (   | (    \/   ) (   | (   ) || (    )|( \   / )     
+    | |   | |   | |   | |         | |   | |   | || (____)| \ (_) /      
+    ( (   ) )   | |   | |         | |   | |   | ||     __)  \   /       
+     \ \_/ /    | |   | |         | |   | |   | || (\ (      ) (        
+      \   /  ___) (___| (____/\   | |   | (___) || ) \ \__   | |        
+       \_/   \_______/(_______/   )_(   (_______)|/   \__/   \_/        
+ _______  _______          _________ _______           _______  ______  
+(  ___  )(  ____ \|\     /|\__   __/(  ____ \|\     /|(  ____ \(  __  \ 
+| (   ) || (    \/| )   ( |   ) (   | (    \/| )   ( || (    \/| (  \  )
+| (___) || |      | (___) |   | |   | (__    | |   | || (__    | |   ) |
+|  ___  || |      |  ___  |   | |   |  __)   ( (   ) )|  __)   | |   | |
+| (   ) || |      | (   ) |   | |   | (       \ \_/ / | (      | |   ) |
+| )   ( || (____/\| )   ( |___) (___| (____/\  \   /  | (____/\| (__/  )
+|/     \|(_______/|/     \|\_______/(_______/   \_/   (_______/(______/ 
+"#;
+
+        for (y, line) in text.lines().enumerate() {
+            ctx.print_color_centered(y + 10, GOLD, BLACK, line);
+        }
+
+        ctx.print_centered(SCREEN_HEIGHT - 2, "Press Space or Enter to restart.");
+
+        if matches!(
+            ctx.key,
+            Some(VirtualKeyCode::Return | VirtualKeyCode::Space)
+        ) {
             self.reset_game_state();
         }
     }
