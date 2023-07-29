@@ -36,7 +36,7 @@ pub fn player_input(
             Right | D => move_player(ecs, commands, Point::new(1, 0), 226),
             Up | W => move_player(ecs, commands, Point::new(0, -1), 225),
             Down | S => move_player(ecs, commands, Point::new(0, 1), 224),
-            G => pick_up_item(ecs, commands, turn_state),
+            Space | Return => pick_up_item(ecs, commands, turn_state),
             Key1 => use_item(0, ecs, commands),
             Key2 => use_item(1, ecs, commands),
             Key3 => use_item(2, ecs, commands),

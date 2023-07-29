@@ -30,7 +30,7 @@ pub fn input(
     #[resource] key: &Option<VirtualKeyCode>,
     #[resource] turn_state: &mut TurnState,
 ) {
-    *turn_state = if matches!(key, Some(VirtualKeyCode::Return)) {
+    *turn_state = if matches!(key, Some(VirtualKeyCode::Return | VirtualKeyCode::Space)) {
         let message_box = <Entity>::query()
             .filter(component::<MessageBox>())
             .iter(ecs)

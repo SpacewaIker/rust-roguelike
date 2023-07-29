@@ -106,7 +106,7 @@ pub fn input(
                     HowToPlay | About => About,
                 }
             }
-            Return => match *selected_button {
+            Space | Return => match *selected_button {
                 Play => {
                     *turn_state = TurnState::AwaitingInput;
                 }
