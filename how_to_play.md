@@ -5,9 +5,9 @@ The game is turn-based, meaning that the player takes one action, then the enemi
 ## Controls
 
 - Use WASD or the arrow keys to move the character.
-- Use G to pick up an item when you are on the same tile.
+- Use Space or Enter to pick up an item when you are on the same tile.
 - Use the number keys to use the associated item listed on the top left of the screen.
-- Use Enter to close a message box, click on a button on the title screen, or return to the title screen after the end of the game.
+- Use Space or Enter to close a message box, click on a button on the title screen, or return to the title screen after the end of the game.
 
 ## Tips
 
