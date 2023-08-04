@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 #[system(for_each)]
 #[read_component(Player)]
+#[read_component(Point)]
 #[read_component(FieldOfView)]
 #[allow(clippy::trivially_copy_pass_by_ref)]
 pub fn movement(
@@ -12,7 +13,12 @@ pub fn movement(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
 ) {
-    if map.can_enter_tile(want_move.destination) {
+    let destination_is_free = <&Point>::query()
+        .filter(component::<Health>())
+        .iter(ecs)
+        .all(|&point| point != want_move.destination);
+
+    if map.can_enter_tile(want_move.destination) && destination_is_free {
         commands.add_component(want_move.entity, want_move.destination);
 
         if let Ok(entry) = ecs.entry_ref(want_move.entity) {
