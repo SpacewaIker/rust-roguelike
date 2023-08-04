@@ -2,7 +2,8 @@ use crate::prelude::*;
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum SelectedButton {
-    Play,
+    PlayNormal,
+    PlayEndless,
     HowToPlay,
     About,
 }
@@ -10,7 +11,8 @@ pub enum SelectedButton {
 impl ToString for SelectedButton {
     fn to_string(&self) -> String {
         match self {
-            Self::Play => String::from("Play"),
+            Self::PlayNormal => String::from("Play Normal"),
+            Self::PlayEndless => String::from("Play Endless"),
             Self::HowToPlay => String::from("How to Play"),
             Self::About => String::from("About"),
         }
@@ -60,7 +62,8 @@ pub fn render(#[resource] selected_button: &mut SelectedButton) {
 
     // buttons
     let buttons = [
-        SelectedButton::Play,
+        SelectedButton::PlayNormal,
+        SelectedButton::PlayEndless,
         SelectedButton::HowToPlay,
         SelectedButton::About,
     ];
@@ -88,6 +91,7 @@ pub fn input(
     #[resource] key: &Option<VirtualKeyCode>,
     #[resource] selected_button: &mut SelectedButton,
     #[resource] turn_state: &mut TurnState,
+    #[resource] game_mode: &mut GameMode,
 ) {
     use SelectedButton::*;
     use VirtualKeyCode::*;
@@ -96,18 +100,25 @@ pub fn input(
         match key {
             Up | W => {
                 *selected_button = match *selected_button {
-                    Play | HowToPlay => Play,
+                    PlayNormal | PlayEndless => PlayNormal,
+                    HowToPlay => PlayEndless,
                     About => HowToPlay,
                 }
             }
             Down | S => {
                 *selected_button = match *selected_button {
-                    Play => HowToPlay,
+                    PlayNormal => PlayEndless,
+                    PlayEndless => HowToPlay,
                     HowToPlay | About => About,
                 }
             }
             Space | Return => match *selected_button {
-                Play => {
+                PlayNormal => {
+                    *game_mode = GameMode::Normal;
+                    *turn_state = TurnState::AwaitingInput;
+                }
+                PlayEndless => {
+                    *game_mode = GameMode::Endless;
                     *turn_state = TurnState::AwaitingInput;
                 }
                 #[cfg(target_family = "wasm")]

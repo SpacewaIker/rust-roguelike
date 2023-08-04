@@ -45,13 +45,14 @@ impl Templates {
         rng: &mut RandomNumberGenerator,
         level: usize,
         spawn_points: &[Point],
+        game_mode: GameMode,
     ) {
         let mut available_entities = Vec::new();
 
         self.entities
             .iter()
             .enumerate()
-            .filter(|(_, entity)| entity.levels.contains(&level))
+            .filter(|(_, entity)| entity.levels.contains(&level) || game_mode == GameMode::Endless)
             .for_each(|(idx, entity)| {
                 for _ in 0..entity.frequency {
                     available_entities.push((idx, entity));

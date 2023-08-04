@@ -26,6 +26,7 @@ mod prelude {
     pub use crate::spawner::*;
     pub use crate::systems::*;
     pub use crate::turn_state::*;
+    pub use crate::GameMode;
 }
 
 use std::collections::HashSet;
@@ -34,6 +35,12 @@ use prelude::*;
 
 embedded_resource!(DUNGEON_FONT, "../resources/mydungeonfont.png");
 embedded_resource!(ALAGARD_FONT, "../resources/alagard_fontmap.png");
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum GameMode {
+    Normal,
+    Endless,
+}
 
 struct State {
     ecs: World,
@@ -57,13 +64,20 @@ impl State {
         map_builder.map.tiles[exit_idx] = TileType::Exit;
 
         let mut templates = Templates::load();
-        templates.spawn_entities(&mut ecs, &mut rng, 0, &map_builder.monster_spawns);
+        templates.spawn_entities(
+            &mut ecs,
+            &mut rng,
+            0,
+            &map_builder.monster_spawns,
+            GameMode::Normal,
+        );
 
         resources.insert(map_builder.map);
         resources.insert(Camera::new(map_builder.player_start));
         resources.insert(TurnState::TitleScreen);
         resources.insert(map_builder.theme);
-        resources.insert(SelectedButton::Play);
+        resources.insert(SelectedButton::PlayNormal);
+        resources.insert(GameMode::Normal);
 
         Self {
             ecs,
@@ -86,14 +100,20 @@ impl State {
         let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
         map_builder.map.tiles[exit_idx] = TileType::Exit;
 
-        self.templates
-            .spawn_entities(&mut self.ecs, &mut rng, 0, &map_builder.monster_spawns);
+        self.templates.spawn_entities(
+            &mut self.ecs,
+            &mut rng,
+            0,
+            &map_builder.monster_spawns,
+            GameMode::Normal,
+        );
 
         self.resources.insert(map_builder.map);
         self.resources.insert(Camera::new(map_builder.player_start));
         self.resources.insert(TurnState::TitleScreen);
         self.resources.insert(map_builder.theme);
-        self.resources.insert(SelectedButton::Play);
+        self.resources.insert(SelectedButton::PlayNormal);
+        self.resources.insert(GameMode::Normal);
     }
 
     fn game_over(&mut self, ctx: &mut BTerm) {
@@ -162,23 +182,32 @@ impl State {
 
     fn advance_level(&mut self) {
         let player_entity = *<Entity>::query().iter(&self.ecs).next().unwrap();
+        let game_mode = self
+            .resources
+            .get::<GameMode>()
+            .map_or(GameMode::Normal, |mode| *mode);
 
         let mut entities_to_keep = HashSet::new();
         entities_to_keep.insert(player_entity);
 
-        <(Entity, &Carried)>::query()
-            .iter(&self.ecs)
-            .filter(|(_, carried)| carried.by == player_entity)
-            .for_each(|(e, _)| {
-                entities_to_keep.insert(*e);
-            });
+        if game_mode == GameMode::Normal {
+            <(Entity, &Carried)>::query()
+                .iter(&self.ecs)
+                .filter(|(_, carried)| carried.by == player_entity)
+                .for_each(|(e, _)| {
+                    entities_to_keep.insert(*e);
+                });
+
+            <Entity>::query()
+                .filter(component::<EquippedWeapon>() | component::<EquippedArmor>())
+                .iter(&self.ecs)
+                .for_each(|&e| {
+                    entities_to_keep.insert(e);
+                });
+        }
 
         <Entity>::query()
-            .filter(
-                component::<EquippedWeapon>()
-                    | component::<EquippedChestItem>()
-                    | component::<EquippedArmor>(),
-            )
+            .filter(component::<EquippedChestItem>())
             .iter(&self.ecs)
             .for_each(|&e| {
                 entities_to_keep.insert(e);
@@ -216,7 +245,7 @@ impl State {
                 pos.y = map_builder.player_start.y;
             });
 
-        if map_level == 2 {
+        if map_level == 2 && game_mode == GameMode::Normal {
             spawn_victory_amulet(&mut self.ecs, map_builder.amulet_start);
         } else {
             let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
@@ -228,6 +257,7 @@ impl State {
             &mut rng,
             map_level as usize,
             &map_builder.monster_spawns,
+            game_mode,
         );
 
         self.resources.insert(map_builder.map);
