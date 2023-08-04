@@ -2,6 +2,10 @@
 
 The game is turn-based, meaning that the player takes one action, then the enemies take one action, etc. This means that thinking about your next move can have a great impact on winning or losing.
 
+## Game modes
+
+There are two game modes: normal and endless. In normal mode, you will have to find the Amulet of Sirref which will spawn on the third level. Between levels, you will keep any items that you find. In endless mode, the goal is to get the maximum score. In between levels, you will keep special items but will lose potions, weapons and armor.
+
 ## Controls
 
 - Use WASD or the arrow keys to move the character.
@@ -16,3 +20,4 @@ The game is turn-based, meaning that the player takes one action, then the enemi
 - Picking up items to deal more damage and receive less damage is primordial as enemies get tougher.
 - Items in chests can give you a significant advantage, try to find some!
 - Health potions are your best friend. You can pick up however many you want.
+- You can skip your turn by pressing the item pick up key. Sometimes waiting will put you in a position of advantage.
